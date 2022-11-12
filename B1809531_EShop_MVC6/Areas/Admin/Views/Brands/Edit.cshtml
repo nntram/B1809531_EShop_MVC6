@@ -1,0 +1,42 @@
+﻿@model B1809531_EShop_MVC6.Models.Brand
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>Brand</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Brandid" />
+            <div class="form-group">
+                <label asp-for="Brandname" class="control-label"></label>
+                <input asp-for="Brandname" class="form-control" />
+                <span asp-validation-for="Brandname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brandcreateddate" class="control-label"></label>
+                <input asp-for="Brandcreateddate" class="form-control" />
+                <span asp-validation-for="Brandcreateddate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Brandimage" class="control-label"></label>
+                <input asp-for="Brandimage" class="form-control" />
+                <span asp-validation-for="Brandimage" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
