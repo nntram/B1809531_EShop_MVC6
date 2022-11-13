@@ -1,3 +1,4 @@
+using Arch.EntityFrameworkCore.UnitOfWork;
 using AspNetCoreHero.ToastNotification;
 using B1809531_EShop_MVC6.Models;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,8 @@ builder.Services.AddNotyf(config => { config.DurationInSeconds = 10; config.IsDi
 builder.Services.AddDbContext<naricosmeticContext>(
                x => x.UseSqlServer(builder.Configuration.GetConnectionString("eshop")));
 
+//Add Unitofwork
+builder.Services.AddUnitOfWork<naricosmeticContext>();
 
 var app = builder.Build();
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using B1809531_EShop_MVC6.Models;
+using Arch.EntityFrameworkCore.UnitOfWork;
 
 namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 {
@@ -13,16 +14,18 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
     public class BrandsController : Controller
     {
         private readonly naricosmeticContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public BrandsController(naricosmeticContext context)
+        public BrandsController(naricosmeticContext context, IUnitOfWork unitOfWork)
         {
             _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // GET: Admin/Brands
         public async Task<IActionResult> Index()
         {
-              return View(await _context.Brands.ToListAsync());
+              return View(await _unitOfWork.GetRepository<Brand>().GetAllAsync());
         }
 
         // GET: Admin/Brands/Details/5
