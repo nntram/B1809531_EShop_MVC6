@@ -5,8 +5,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using B1809531_EShop_MVC6.Models;
+using B1809531_EShop_MVC6.Entities;
 using Arch.EntityFrameworkCore.UnitOfWork;
+using AspNetCoreHero.ToastNotification.Abstractions;
+using B1809531_EShop_MVC6.Data;
+using AutoMapper;
+using B1809531_EShop_MVC6.Models;
 
 namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 {
@@ -15,11 +19,15 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
     {
         private readonly naricosmeticContext _context;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+        public INotyfService _notifyService {get;}
 
-        public BrandsController(naricosmeticContext context, IUnitOfWork unitOfWork)
+        public BrandsController(naricosmeticContext context, IUnitOfWork unitOfWork, INotyfService notifyService, IMapper mapper)
         {
             _context = context;
             _unitOfWork = unitOfWork;
+            _notifyService = notifyService;
+            _mapper = mapper;
         }
 
         // GET: Admin/Brands
@@ -31,13 +39,13 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         // GET: Admin/Brands/Details/5
         public async Task<IActionResult> Details(string id)
         {
-            if (id == null || _context.Brands == null)
+            if (id == null || _unitOfWork.GetRepository<Brand>() == null)
             {
                 return NotFound();
             }
 
-            var brand = await _context.Brands
-                .FirstOrDefaultAsync(m => m.Brandid == id);
+            var brand = await _unitOfWork.GetRepository<Brand>()
+                .GetFirstOrDefaultAsync (predicate: m => m.Brandid == id);
             if (brand == null)
             {
                 return NotFound();
@@ -52,20 +60,23 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             return View();
         }
 
-        // POST: Admin/Brands/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Brandid,Brandname,Brandcreateddate,Brandimage")] Brand brand)
+        public async Task<IActionResult> Create(BrandModel brandModel)
         {
+            var brand = _mapper.Map<Brand>(brandModel);
+            
             if (ModelState.IsValid)
-            {
-                _context.Add(brand);
-                await _context.SaveChangesAsync();
+            {                
+                await _unitOfWork.GetRepository<Brand>().InsertAsync(brand);
+                _unitOfWork.SaveChanges();
+                _notifyService.Success("Thêm thành công.");
                 return RedirectToAction(nameof(Index));
             }
-            return View(brand);
+            
+            _notifyService.Error("Đã xảy ra lỗi.");
+            return View(brandModel);
         }
 
         // GET: Admin/Brands/Edit/5
@@ -76,17 +87,15 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = await _unitOfWork.GetRepository<Brand>()
+                .FindAsync(id);
             if (brand == null)
             {
                 return NotFound();
             }
             return View(brand);
         }
-
-        // POST: Admin/Brands/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+      
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(string id, [Bind("Brandid,Brandname,Brandcreateddate,Brandimage")] Brand brand)
@@ -158,7 +167,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
         private bool BrandExists(string id)
         {
-          return _context.Brands.Any(e => e.Brandid == id);
+            return _unitOfWork.GetRepository<Brand>().Exists(n => n.Brandid == id);
         }
     }
 }

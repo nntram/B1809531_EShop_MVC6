@@ -1,0 +1,7 @@
+Scaffold-DbContext “Data Source=WINDOWS\NGOCTRAM;Initial Catalog=naricosmetic;Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models
+Scaffold-DbContext “Data Source=WINDOWS\NGOCTRAM;Initial Catalog=naricosmetic;Integrated Security=True" Microsoft.EntityFrameworkCore.SqlServer -ContextDir Data -OutputDir Models -DataAnnotations -f
+
+
+ var errors = ModelState
+                     .Where(x => x.Value.Errors.Count > 0)
+                     .Select(x => new { x.Key, x.Value.Errors }).ToArray();
