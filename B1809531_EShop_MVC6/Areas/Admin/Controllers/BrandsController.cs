@@ -51,6 +51,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 return NotFound();
             }
 
+
             return View(brand);
         }
 
@@ -69,8 +70,8 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             
             if (ModelState.IsValid)
             {                
-                await _unitOfWork.GetRepository<Brand>().InsertAsync(brand);
-                _unitOfWork.SaveChanges();
+                 _unitOfWork.GetRepository<Brand>().Insert(brand);
+                await _unitOfWork.SaveChangesAsync();
                 _notifyService.Success("Thêm thành công.");
                 return RedirectToAction(nameof(Index));
             }
@@ -82,7 +83,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         // GET: Admin/Brands/Edit/5
         public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.Brands == null)
+            if (id == null || _unitOfWork.GetRepository<Brand>() == null)
             {
                 return NotFound();
             }
@@ -93,57 +94,62 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            return View(brand);
+
+            var brandModel = _mapper.Map<BrandModel>(brand);
+            return View(brandModel);
         }
       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Brandid,Brandname,Brandcreateddate,Brandimage")] Brand brand)
+        public async Task<IActionResult> Edit(BrandModel brandModel)
         {
-            if (id != brand.Brandid)
+            if (!(brandModel.Brandid is not null && BrandExists(brandModel.Brandid)))
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                var brand = await _unitOfWork.GetRepository<Brand>().FindAsync(brandModel.Brandid);
+                if (brand == null)
+                {
+                    return NotFound();
+                }
+                var brandUpdated = _mapper.Map(brandModel, brand);
                 try
                 {
-                    _context.Update(brand);
-                    await _context.SaveChangesAsync();
+                    _unitOfWork.GetRepository<Brand>().Update(brandUpdated);
+                    await _unitOfWork.SaveChangesAsync();
+                    _notifyService.Success("Chỉnh sửa thành công.");
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception e)
                 {
-                    if (!BrandExists(brand.Brandid))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    _notifyService.Error("Đã xảy ra lỗi.");
+                    return RedirectToAction(nameof(Index));
                 }
+               
                 return RedirectToAction(nameof(Index));
             }
-            return View(brand);
+            return View(brandModel);
         }
 
         // GET: Admin/Brands/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
-            if (id == null || _context.Brands == null)
+            if (id == null || _unitOfWork.GetRepository<Brand>() == null)
             {
                 return NotFound();
             }
 
-            var brand = await _context.Brands
-                .FirstOrDefaultAsync(m => m.Brandid == id);
+            var brand = await _unitOfWork.GetRepository<Brand>()
+                .FindAsync(id);
             if (brand == null)
             {
                 return NotFound();
             }
 
-            return View(brand);
+            var brandModel = _mapper.Map<BrandModel>(brand);
+            return View(brandModel);
         }
 
         // POST: Admin/Brands/Delete/5
@@ -151,23 +157,28 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Brands == null)
+            if (_unitOfWork.GetRepository<Brand>() == null)
             {
                 return Problem("Entity set 'naricosmeticContext.Brands'  is null.");
             }
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = await _unitOfWork.GetRepository<Brand>().FindAsync(id);
             if (brand != null)
             {
-                _context.Brands.Remove(brand);
+                _unitOfWork.GetRepository<Brand>().Delete(brand);
             }
-            
-            await _context.SaveChangesAsync();
+            _notifyService.Success("Xóa thành công");
+            await _unitOfWork.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool BrandExists(string id)
         {
             return _unitOfWork.GetRepository<Brand>().Exists(n => n.Brandid == id);
+        }
+
+        private bool BrandNameExists(string name)
+        {
+            return _unitOfWork.GetRepository<Brand>().Exists(n => n.Brandname == name);
         }
     }
 }

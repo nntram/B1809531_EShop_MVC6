@@ -9,6 +9,7 @@ namespace B1809531_EShop_MVC6.Helpers
         public AutoMapperProfile()
         {
             CreateMap<Brand, BrandModel>().ReverseMap();
+            CreateMap<Brand, Brand>();
         }
     }
 }

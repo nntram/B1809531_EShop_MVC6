@@ -9,6 +9,7 @@ namespace B1809531_EShop_MVC6.Models
         [Required]
         [StringLength(256)]
         public string? Brandname { get; set; }
+        public long? Brandcreateddate { get; set; }
 
         [StringLength(256)]
         public string? Brandimage { get; set; }
