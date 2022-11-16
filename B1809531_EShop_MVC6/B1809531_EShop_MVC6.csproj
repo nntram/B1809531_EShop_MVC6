@@ -24,8 +24,6 @@
     <Folder Include="Areas\Admin\Data\" />
     <Folder Include="Areas\Admin\Models\" />
     <Folder Include="Data\" />
-    <Folder Include="Models\RequestModels\" />
-    <Folder Include="Models\ResponseModels\" />
   </ItemGroup>
 
   <ItemGroup>

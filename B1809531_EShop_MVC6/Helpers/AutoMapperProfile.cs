@@ -10,6 +10,7 @@ namespace B1809531_EShop_MVC6.Helpers
         {
             CreateMap<Brand, BrandModel>().ReverseMap();
             CreateMap<Brand, Brand>();
+            CreateMap<Brand, BrandCreateModel>().ReverseMap();
         }
     }
 }

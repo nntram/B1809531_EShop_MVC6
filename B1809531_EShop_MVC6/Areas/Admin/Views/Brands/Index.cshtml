@@ -1,4 +1,5 @@
-﻿@model IEnumerable<B1809531_EShop_MVC6.Entities.Brand>
+﻿@using B1809531_EShop_MVC6.Helpers
+@model IEnumerable<B1809531_EShop_MVC6.Models.BrandModel>
 
 @{
     ViewData["Title"] = "Danh sách các thương hiệu";
@@ -50,13 +51,13 @@
                             <thead>
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Brandname)
+                                        Tên
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Brandcreateddate)
+                                        Ngày tạo
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Brandimage)
+                                        Hình ảnh
                                     </th>
                                     <th></th>
                                 </tr>
@@ -69,18 +70,17 @@
                                             @Html.DisplayFor(modelItem => item.Brandname)
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Brandcreateddate)
+                                            @{var datetime = DatetimeHelpers.UnixTimeStampToDateTime
+                                                                    (item.Brandcreateddate.HasValue?item.Brandcreateddate.Value:0).ToString();}
+                                            @(datetime)                                        
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Brandimage)
+                                           <img src="/@(GetPath.BrandImage+ item.Brandimage)" class="list-image"/>
                                         </td>
-                                        <td class="right">
-                                            <a asp-action="Edit" asp-route-id="@item.Brandid" class="btn btn-warning">Edit</a>
-
-                                            <a asp-action="Details" asp-route-id="@item.Brandid" class="btn btn-info">Details</a>
-
-                                            <a asp-action="Delete" asp-route-id="@item.Brandid" class="btn btn-danger">Delete</a>
-
+                                        <td class="right">                                          
+                                            <a asp-action="Details" asp-route-id="@item.Brandid" class="btn btn-info">Chi tiết</a>
+                                             <a asp-action="Edit" asp-route-id="@item.Brandid" class="btn btn-warning">Chỉnh sửa</a>
+                                            <a asp-action="Delete" asp-route-id="@item.Brandid" class="btn btn-danger">Xóa</a>
                                         </td>
                                     </tr>
                                 }
@@ -88,11 +88,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-12 col-md-5">
-                        <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing 1 to 10 of 57 entries</div>
-                    </div>
-                </div>
+               
             </div>
         </div>
     </div>

@@ -1,6 +1,8 @@
 using Arch.EntityFrameworkCore.UnitOfWork;
 using AspNetCoreHero.ToastNotification;
 using B1809531_EShop_MVC6.Data;
+using B1809531_EShop_MVC6.Services;
+using B1809531_EShop_MVC6.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,6 +20,9 @@ builder.Services.AddDbContext<naricosmeticContext>(
 
 //Add Unitofwork
 builder.Services.AddUnitOfWork<naricosmeticContext>();
+
+//Add Services
+builder.Services.AddTransient(typeof(IFileManagerServies), typeof(FileManagerServies));
 
 var app = builder.Build();
 
