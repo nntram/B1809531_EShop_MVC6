@@ -15,7 +15,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileManagerServies _fileManagerService;
-        public INotyfService _notifyService {get;}
+        public  readonly INotyfService _notifyService;
 
         public BrandsController(IUnitOfWork unitOfWork, IMapper mapper, 
             IFileManagerServies fileManagerService, 
@@ -29,8 +29,9 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
         // GET: Admin/Brands
         public async Task<IActionResult> Index()
-        {
-            var brand = await _unitOfWork.GetRepository<Brand>().GetAllAsync();
+        {            
+            var brand = await _unitOfWork.GetRepository<Brand>()
+                .GetAllAsync(orderBy: n => n.OrderByDescending(p => p.Brandcreateddate));
             return View(_mapper.Map<IEnumerable<BrandModel>>(brand));
         }
 
@@ -72,7 +73,6 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     return View(brandCreateModel);
                 }
 
-                brandCreateModel.Brandimage = brandCreateModel.BrandImageFile.FileName;
             }
        
             var brand = _mapper.Map<Brand>(brandCreateModel);
@@ -85,23 +85,27 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     return View(brandCreateModel);
                 }
 
-                _unitOfWork.GetRepository<Brand>().Insert(brand);
-                await _unitOfWork.SaveChangesAsync();
-
-                if(brandCreateModel.BrandImageFile?.Length > 0)
+                if (brandCreateModel.BrandImageFile?.Length > 0)
                 {
-                    var upLoadImage = _fileManagerService.UploadSingleImage(brandCreateModel.BrandImageFile, GetPath.BrandImage);
-                    if (!upLoadImage)
+                    var upLoadImage = await _fileManagerService.UploadSingleImage(brandCreateModel.BrandImageFile, GetPath.BrandImage);
+                    if (upLoadImage.Length > 0)
+                    {
+                        brand.Brandimage = upLoadImage;
+                    }
+                    else
                     {
                         _notifyService.Error("Đã xảy ra lỗi khi upload ảnh.");
-                    }
+                    }    
                 }
 
+                _unitOfWork.GetRepository<Brand>().Insert(brand);
+                await _unitOfWork.SaveChangesAsync();
+               
                 _notifyService.Success("Thêm thành công.");
                 return RedirectToAction(nameof(Index));
             }
             
-            _notifyService.Error("Đã xảy ra lỗi.");
+            _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
             return View(brandCreateModel);
         }
 
@@ -120,41 +124,81 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            return View(_mapper.Map<BrandModel>(brand));
+            return View(_mapper.Map<BrandCreateModel>(brand));
         }
       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromForm] BrandModel brandModel)
+        public async Task<IActionResult> Edit([FromForm] BrandCreateModel brandCreateModel)
         {
-            if (!(brandModel.Brandid is not null && BrandExists(brandModel.Brandid)))
+            if (!(brandCreateModel.Brandid is not null && BrandExists(brandCreateModel.Brandid)))
             {
                 return NotFound();
             }
 
+            if (brandCreateModel.BrandImageFile != null)
+            {
+                var checkImageFile = FileValid.IsImageValid(brandCreateModel.BrandImageFile);
+                if (!checkImageFile)
+                {
+                    _notifyService.Error("Đã xảy ra lỗi. Định dạng ảnh không hợp lệ.");
+                    return View(brandCreateModel);
+                }
+
+                brandCreateModel.Brandimage = brandCreateModel.BrandImageFile.FileName;
+            }
+
             if (ModelState.IsValid)
             {
-                var brand = await _unitOfWork.GetRepository<Brand>().FindAsync(brandModel.Brandid);
+                if (BrandNameExists(brandCreateModel.Brandname, brandCreateModel.Brandid))
+                {
+                    _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
+                    return View(brandCreateModel);
+                }
+
+                var brand = await _unitOfWork.GetRepository<Brand>().FindAsync(brandCreateModel.Brandid);
                 if (brand == null)
                 {
                     return NotFound();
                 }
-                var brandUpdated = _mapper.Map(brandModel, brand);
+
+                var brandImage = brand.Brandimage;
+                _mapper.Map(brandCreateModel, brand);
                 try
                 {
-                    _unitOfWork.GetRepository<Brand>().Update(brandUpdated);
-                    await _unitOfWork.SaveChangesAsync();
+                    if (brandCreateModel.BrandImageFile?.Length > 0)
+                    {
+                        var upLoadImage = await _fileManagerService.UploadSingleImage(brandCreateModel.BrandImageFile, GetPath.BrandImage);
+                        if (upLoadImage.Length > 0)
+                        {
+                            brand.Brandimage = upLoadImage;
+                            if(brandImage != null && brandImage != "")
+                            {
+                                _fileManagerService.DeleteSingleImage(GetPath.BrandImage + brandImage);
+                            }
+                        }
+                        else
+                        {
+                            _notifyService.Error("Đã xảy ra lỗi khi upload ảnh.");
+                        }
+                    }
+
+                    _unitOfWork.GetRepository<Brand>().Update(brand);
+                    await _unitOfWork.SaveChangesAsync();                   
+
                     _notifyService.Success("Chỉnh sửa thành công.");
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     _notifyService.Error("Đã xảy ra lỗi.");
                     return RedirectToAction(nameof(Index));
                 }
                
-                return RedirectToAction(nameof(Index));
             }
-            return View(brandModel);
+
+            _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
+            return View(brandCreateModel);
         }
 
         // GET: Admin/Brands/Delete/5
@@ -182,12 +226,23 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         {
             if (_unitOfWork.GetRepository<Brand>() == null)
             {
-                return Problem("Entity set 'naricosmeticContext.Brands'  is null.");
+                return Problem("Entity set 'Brands'  is null.");
             }
             var brand = await _unitOfWork.GetRepository<Brand>().FindAsync(id);
             if (brand != null)
             {
+                var brand_Products = _unitOfWork.GetRepository<Product>().Exists(n => n.Brandid == id);
+                if (brand_Products)
+                {
+                    _notifyService.Error("Không thể xóa do ràng buộc dữ liệu.");
+                    return RedirectToAction(nameof(Index));
+                }
                 _unitOfWork.GetRepository<Brand>().Delete(brand);
+
+                if(brand.Brandimage != null && brand.Brandimage != "")
+                {
+                    _fileManagerService.DeleteSingleImage(GetPath.BrandImage + brand.Brandimage);
+                }
             }
             _notifyService.Success("Xóa thành công");
             await _unitOfWork.SaveChangesAsync();
@@ -202,6 +257,11 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         private bool BrandNameExists(string name)
         {
             return _unitOfWork.GetRepository<Brand>().Exists(n => n.Brandname.ToLower() == name.ToLower());
+        }
+
+        private bool BrandNameExists(string name, string id)
+        {
+            return _unitOfWork.GetRepository<Brand>().Exists(n => (n.Brandname.ToLower() == name.ToLower() && n.Brandid != id));
         }
     }
 }

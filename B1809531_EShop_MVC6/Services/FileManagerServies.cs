@@ -11,13 +11,32 @@ namespace B1809531_EShop_MVC6.Services
             _environment = environment;
         }
 
-        public bool UploadMultipleImages(IEnumerable<IFormFile> postedFiles, string path)
+        public void DeleteMultipleImages(List<string> listPath)
         {
             throw new NotImplementedException();
         }
 
-        public bool UploadSingleImage(IFormFile postedFile, string path)
+        public void DeleteSingleImage(string path)
         {
+            var imgdel = Path.Combine(_environment.WebRootPath, path);
+            FileInfo fi = new FileInfo(imgdel);
+            if (fi.Exists)
+            {
+                File.Delete(imgdel);
+                fi.Delete();
+            }
+
+           
+        }
+
+        public Task<List<string>> UploadMultipleImages(IEnumerable<IFormFile> postedFiles, string path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> UploadSingleImage(IFormFile postedFile, string path)
+        {
+            string fileName = "";
             try
             {
                 var fullPath = Path.Combine(_environment.WebRootPath, path);
@@ -26,21 +45,19 @@ namespace B1809531_EShop_MVC6.Services
                     Directory.CreateDirectory(fullPath);
                 }
 
-                string fileName = Path.GetFileName(postedFile.FileName);
+                fileName = Guid.NewGuid().ToString() + Path.GetExtension(postedFile.FileName);
                 var imagePath = Path.Combine(fullPath, fileName);
                 using (FileStream stream = new FileStream(imagePath, FileMode.Create))
                 {
-                    postedFile.CopyTo(stream);
+                    await postedFile.CopyToAsync(stream);
 
-                }
-
-                return true;
+                }              
             }
             catch (Exception)
             {
-                return false;
+                
             }
-            
+            return fileName;
         }
     }
 }
