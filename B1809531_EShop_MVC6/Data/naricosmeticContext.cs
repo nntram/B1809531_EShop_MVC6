@@ -133,7 +133,7 @@ namespace B1809531_EShop_MVC6.Data
 
                 entity.Property(e => e.Categoryid).HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.Categorycreacteddate).HasDefaultValueSql("(datediff_big(millisecond,'1970-01-01 00:00:00',getdate()))");
+                entity.Property(e => e.Categorycreateddate).HasDefaultValueSql("(datediff_big(millisecond,'1970-01-01 00:00:00',getdate()))");
             });
 
             modelBuilder.Entity<Categorydiscount>(entity =>

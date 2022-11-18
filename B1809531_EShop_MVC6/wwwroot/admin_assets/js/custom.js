@@ -7,8 +7,8 @@
   }
 }
 
-function cleanImageFile() {
-    document.getElementById("BrandImageFile").value = "";
+function cleanImageFile(id) {
+    document.getElementById(id).value = "";
     var preview = document.getElementById("file-ip-1-preview");
     preview.src = "";
 }

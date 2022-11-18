@@ -22,8 +22,8 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("CATEGORYNAME")]
         [StringLength(256)]
         public string? Categoryname { get; set; }
-        [Column("CATEGORYCREACTEDDATE")]
-        public long? Categorycreacteddate { get; set; }
+        [Column("CATEGORYCREATEDDATE")]
+        public long? Categorycreateddate { get; set; }
         [Column("CATEGORYIMAGE")]
         [StringLength(256)]
         public string? Categoryimage { get; set; }

@@ -1,0 +1,52 @@
+﻿@using B1809531_EShop_MVC6.Helpers
+@model B1809531_EShop_MVC6.Models.CategoryModel
+
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+}
+
+<h1>Xác nhận xóa</h1>
+<div>
+    <h4>Loại sản phẩm</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Tên:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Categoryname)
+        </dd>
+        <dt class="col-sm-2">
+            Ngày tạo
+        </dt>
+        <dd class="col-sm-10">
+            @{
+                var datetime = DatetimeHelpers.UnixTimeStampToDateTime
+                (Model.Categorycreateddate.HasValue ? Model.Categorycreateddate.Value : 0).ToString();
+            }
+            @(datetime)
+        </dd>
+        <dt class="col-sm-2">
+            Hình ảnh:
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Categoryimage)
+        </dd>
+
+        <dt class="col-sm-2">
+
+        </dt>
+        <dd class="col-sm-10">
+            <img src="/@(GetPath.CategoryImage+ Model.Categoryimage)" class="img-details" />
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Categoryid" />
+        <div>
+            <input type="submit" value="Xác nhận xóa" class="btn btn-danger" />
+            <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+        </div>
+    </form>
+</div>

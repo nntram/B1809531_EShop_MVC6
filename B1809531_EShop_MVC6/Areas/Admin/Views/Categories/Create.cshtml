@@ -1,4 +1,4 @@
-﻿@model B1809531_EShop_MVC6.Models.BrandCreateModel
+﻿@model B1809531_EShop_MVC6.Models.CategoryCreateModel
 
 @{
     ViewData["Title"] = "Create";
@@ -7,7 +7,7 @@
 
 <h1>Thêm mới</h1>
 
-<h4>Thương hiệu</h4>
+<h4>Loại sản phẩm</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -15,17 +15,17 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label class="control-label"> Tên: </label>
-                <input asp-for="Brandname" class="form-control" />
-                <span asp-validation-for="Brandname" class="text-danger"></span>
+                <input asp-for="Categoryname" class="form-control" />
+                <span asp-validation-for="Categoryname" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label class="control-label"> Hình ảnh: </label>
-                <input type="file" asp-for="BrandImageFile" accept="image/*" class="form-control-file" onchange="showPreview(event)" />
-                <img id="file-ip-1-preview" class="img-edit" />
+                <input type="file" asp-for="CategoryImageFile" accept="image/*" class="form-control-file" onchange="showPreview(event)"/>
+                <img id="file-ip-1-preview" class="img-edit"/>
             </div>
 
-            <div class="form-group">
-                <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('BrandImageFile')"> x Bỏ ảnh đã chọn</button>
+            <div class="form-group">              
+                <button type="button"class="btn btn-outline-dark" onclick="cleanImageFile('CategoryImageFile')"> x Bỏ ảnh đã chọn</button>
             </div>
 
             <div class="form-group">
@@ -33,11 +33,8 @@
                     <input type="submit" value="Thêm" class="btn btn-primary" />
                     <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
                 </div>
-
             </div>
         </form>
     </div>
 </div>
-
-
 
