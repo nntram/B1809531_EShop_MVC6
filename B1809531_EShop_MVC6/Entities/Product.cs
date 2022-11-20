@@ -47,6 +47,8 @@ namespace B1809531_EShop_MVC6.Entities
         public bool? Productinacitve { get; set; }
         [Column("PRODUCTSALEPRICE")]
         public int? Productsaleprice { get; set; }
+        [Column("PRODUCTISHOT")]
+        public bool? Productishot { get; set; }
 
         [ForeignKey("Brandid")]
         [InverseProperty("Products")]

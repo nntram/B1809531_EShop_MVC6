@@ -12,3 +12,14 @@ function cleanImageFile(id) {
     var preview = document.getElementById("file-ip-1-preview");
     preview.src = "";
 }
+
+function hideShowProductDetail(){
+    var element = document.getElementById("product-describe");
+    var state = element.style.display;
+    if (state == "") {
+        element.style.display = "block";
+    }
+    else {
+        element.style.display = "";
+    }
+}

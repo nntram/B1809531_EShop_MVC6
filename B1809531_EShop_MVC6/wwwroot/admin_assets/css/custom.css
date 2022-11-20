@@ -5,6 +5,7 @@
     margin-left: auto;
     margin-right: auto;
 }
+
 .img-details {
     width: 100%;
     max-width: 200px;
@@ -16,3 +17,14 @@
     margin-top: 15px;
 }
 
+.a-hide-show {
+    text-decoration: auto;
+}
+
+.a-hide-show:hover {
+   cursor: pointer;
+}
+
+.product-describe{
+    display: none;
+}

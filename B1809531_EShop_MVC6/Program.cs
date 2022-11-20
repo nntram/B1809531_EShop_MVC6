@@ -4,13 +4,20 @@ using B1809531_EShop_MVC6.Data;
 using B1809531_EShop_MVC6.Services;
 using B1809531_EShop_MVC6.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 //Add Auto Mapper
 builder.Services.AddAutoMapper(typeof(Program));
 
 // Add services to the container.
-builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+builder.Services.AddControllersWithViews()
+    .AddRazorRuntimeCompilation()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.WriteIndented = true;
+    }); 
 //Add noitify
 builder.Services.AddNotyf(config => { config.DurationInSeconds = 3; config.IsDismissable = true; config.Position = NotyfPosition.TopRight; });
 
