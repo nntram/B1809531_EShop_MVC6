@@ -6,127 +6,130 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Chi tiết</h1>
+<div class="row d-flex justify-content-center">
 
+    <div class="col-lg-11">
 
-    <h4>Sản phẩm</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Tên:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Productname)
-        </dd>
-        <dt class="col-sm-2">
-            Ngày tạo:
-        </dt>
-        <dd class="col-sm-10">
-            @{
-                var datetime = DatetimeHelpers.UnixTimeStampToDateTime
-                (Model.Productcreateddate.HasValue ? Model.Productcreateddate.Value : 0).ToString();
-            }
-            @(datetime)
-        </dd>
-        <dt class="col-sm-2">
-            Loại sản phẩm:
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Category.Categoryname
-        </dd>
-         <dt class="col-sm-2">
-            Thương hiệu:
-        </dt>
-        <dd class="col-sm-10">
-            @Model.Brand.Brandname
-        </dd>
-        <dt class="col-sm-2">
-            Giá niêm yết:
-        </dt>
-        <dd class="col-sm-10">
-            @String.Format("{0:n0}", Model.Productprice) VNĐ
-        </dd>
-        <dt class="col-sm-2">
-            Giá giảm:
-        </dt>
-        <dd class="col-sm-10">
-            @String.Format("{0:n0}", Model.Productsaleprice) VNĐ
-        </dd>
-        <dt class="col-sm-2">
-            Số lượng trong kho:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Productquantity)
-        </dd>
-        <dt class="col-sm-2">
-            Hình ảnh sản phẩm:
-        </dt>
-        <dd class="col-sm-10">
-            <div class="col-sm-5">
-                <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-                    <ol class="carousel-indicators">
+        <!-- Default Card Example -->
+        <div class="card mb-4">
+
+            <div class="card-header py-3">
+                <h1 class="text-primary">Chi tiết</h1>
+                <h4 class="text-primary">Sản phẩm</h4>
+            </div>
+
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        Tên:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Productname)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Ngày tạo:
+                    </dt>
+                    <dd class="col-sm-10">
                         @{
-                            var images = Model.Productimages;
-                            foreach (var item in images.Select((value, i) => new { i, value }))
-                            {
-                                <li data-target="#carouselExampleIndicators" data-slide-to=@(item.i)
-                                class="@((item.i == 0) ? "class = active bg-primary" : "class = bg-primary" )">
-                                </li>
-                            }
+                            var datetime = DatetimeHelpers.UnixTimeStampToDateTime
+                            (Model.Productcreateddate.HasValue ? Model.Productcreateddate.Value : 0).ToString();
                         }
+                        @(datetime)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Loại sản phẩm:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.Category.Categoryname
+                    </dd>
+                    <dt class="col-sm-2">
+                        Thương hiệu:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Model.Brand.Brandname
+                    </dd>
+                    <dt class="col-sm-2">
+                        Giá niêm yết:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @String.Format("{0:n0}", Model.Productprice) VNĐ
+                    </dd>
+                    <dt class="col-sm-2">
+                        Giá giảm:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @String.Format("{0:n0}", Model.Productsaleprice) VNĐ
+                    </dd>
+                    <dt class="col-sm-2">
+                        Số lượng trong kho:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Productquantity)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Hình ảnh sản phẩm:
+                    </dt>
+                    <dd class="col-sm-10">
+                        <div class="col-sm-5">
+                            <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                                <ol class="carousel-indicators">
+                                    @{
+                                        var images = Model.Productimages;
+                                        foreach (var item in images.Select((value, i) => new { i, value }))
+                                        {
+                                            <li data-target="#carouselExampleIndicators" data-slide-to=@(item.i)
+                                            class="@((item.i == 0) ? "class = active bg-primary" : "class = bg-primary" )">
+                                            </li>
+                                        }
+                                    }
 
-                    </ol>
-                    <div class="carousel-inner">
+                                </ol>
+                                <div class="carousel-inner">
 
-                        @{
-                            var className = "";
-                            foreach (var item in images.Select((value, i) => new { i, value }))
-                            {
-                                className = (item.i == 0) ? "carousel-item active" : "carousel-item";
-                                <div class="@className">
-                                    <img class="d-block w-100" src="/@(GetPath.ProductImage+item.value.Productimageurl)">
+                                    @{
+                                        var className = "";
+                                        foreach (var item in images.Select((value, i) => new { i, value }))
+                                        {
+                                            className = (item.i == 0) ? "carousel-item active" : "carousel-item";
+                                            <div class="@className">
+                                                <img class="d-block w-100" src="/@(GetPath.ProductImage+item.value.Productimageurl)">
+                                            </div>
+                                        }
+                                    }
+
                                 </div>
-                            }
-                        }
+                                <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                                    <span class="carousel-control-prev-icon bg-primary" aria-hidden="true"></span>
+                                    <span class="sr-only bg-primary">Previous</span>
+                                </a>
+                                <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                                    <span class="carousel-control-next-icon bg-primary" aria-hidden="true"></span>
+                                    <span class="sr-only bg-primary">Next</span>
+                                </a>
+                            </div>
+                        </div>
+                    </dd>
+                    <dt class="col-sm-2">
+                        Giới thiệu sản phẩm:
+                    </dt>
+                    <dd class="col-sm-10">
+                        <a class="btn btn-outline-info" onclick="hideShowProductDetail()"> Ẩn/hiện mô tả sản phẩm </a>
+                        <div id="product-describe" class="product-describe">
+                            @Html.Raw(Model.Productdescribe)
+                        </div>
+                    </dd>
 
-                    </div>
-                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
-                        <span class="carousel-control-prev-icon bg-primary" aria-hidden="true"></span>
-                        <span class="sr-only bg-primary">Previous</span>
-                    </a>
-                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon bg-primary" aria-hidden="true"></span>
-                        <span class="sr-only bg-primary">Next</span>
-                    </a>
-                </div>
+                </dl>
             </div>
-        </dd>
-        <dt class="col-sm-2">
-            Giới thiệu sản phẩm:
-        </dt>
-        <dd class="col-sm-10">
-            <a class="btn btn-outline-info" onclick="hideShowProductDetail()"> Ẩn/hiện mô tả sản phẩm </a>
-            <div id="product-describe" class="product-describe">
-                @Html.Raw(Model.Productdescribe)
-            </div>
-        </dd>
-        @*<dt class="col-sm-2">
-        Hình ảnh:
-        </dt>
-        <dd class="col-sm-10">
-        @Html.DisplayFor(model => model.Productimage)
-        </dd>
-        <dt class="col-sm-2">
-
-        </dt>
-        <dd class="col-sm-10">
-        <img src="/@(GetPath.ProductImage+ Model.Productimage)" class="img-details"/>
-        </dd>*@
-
-    </dl>
-
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Productid" class="btn btn-warning">Chỉnh sửa</a>
-
-    <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+        </div>
+    </div>
 </div>
+
+<div class="row d-flex justify-content-center">
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Productid" class="btn btn-warning">Chỉnh sửa</a>
+
+        <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+    </div>
+</div>
+

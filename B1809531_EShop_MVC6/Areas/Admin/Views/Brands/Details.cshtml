@@ -6,45 +6,61 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Chi tiết</h1>
+<div class="row d-flex justify-content-center">
 
-<div>
-    <h4>Thương hiệu</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            Tên:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Brandname)
-        </dd>
-        <dt class="col-sm-2">
-            Ngày tạo:
-        </dt>
-        <dd class="col-sm-10">
-            @{
-                var datetime = DatetimeHelpers.UnixTimeStampToDateTime
-                (Model.Brandcreateddate.HasValue ? Model.Brandcreateddate.Value : 0).ToString();
-            }
-            @(datetime)
-        </dd>
-        <dt class="col-sm-2">
-            Hình ảnh:
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Brandimage)
-        </dd>
-        <dt class="col-sm-2">
-            
-        </dt>
-        <dd class="col-sm-10">
-            <img src="/@(GetPath.BrandImage+ Model.Brandimage)" class="img-details"/>
-        </dd>
+    <div class="col-lg-6">
 
-    </dl>
+        <!-- Default Card Example -->
+        <div class="card mb-4">
+
+            <div class="card-header py-3">
+                <h1 class="text-primary">Chi tiết</h1>
+                <h4 class="text-primary">Thương hiệu</h4>
+            </div>
+
+            <div class="card-body">
+
+                <dl class="row">
+                    <dt class="col-sm-2">
+                        Tên:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Brandname)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Ngày tạo:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @{
+                            var datetime = DatetimeHelpers.UnixTimeStampToDateTime
+                            (Model.Brandcreateddate.HasValue ? Model.Brandcreateddate.Value : 0).ToString();
+                        }
+                        @(datetime)
+                    </dd>
+                    <dt class="col-sm-2">
+                        Hình ảnh:
+                    </dt>
+                    <dd class="col-sm-10">
+                        @Html.DisplayFor(model => model.Brandimage)
+                    </dd>
+                    <dt class="col-sm-2">
+
+                    </dt>
+                    <dd class="col-sm-10">
+                        <img src="/@(GetPath.BrandImage+ Model.Brandimage)" class="img-details" />
+                    </dd>
+
+                </dl>
+
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Brandid" class="btn btn-warning">Chỉnh sửa</a>
 
-    <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+<div class="row d-flex justify-content-center">
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Brandid" class="btn btn-warning">Chỉnh sửa</a>
+
+        <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+    </div>
 </div>

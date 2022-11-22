@@ -8,6 +8,8 @@ using B1809531_EShop_MVC6.Helpers;
 using B1809531_EShop_MVC6.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using PagedList.Core;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 {
@@ -30,15 +32,40 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         }
 
         // GET: Admin/Products
-        public async Task<IActionResult> Index(int? page)
+        public async Task<IActionResult> Index(ProductFilterModel filterModel)
         {
-            var pageNumber = page ?? 1;
-            var product = await _unitOfWork.GetRepository<Product>()
-                .GetAllAsync(include: source => source
-                .Include(m => m.Productimages),
-                orderBy: n => n.OrderByDescending(p => p.Productcreateddate));
+            var pageNumber = filterModel.page ?? 1;
+            var product = await _unitOfWork.GetRepository<Product>().GetAllAsync(
+                    predicate: source => source.Productinacitve == true,
+                    include: source => source.Include(m => m.Productimages),
+                    orderBy: n => n.OrderByDescending(p => p.Productcreateddate)) as IEnumerable<Product>;
+
+            if (!String.IsNullOrEmpty(filterModel.search))
+            {
+                product = product.Where(n => 
+                        n.Productname.ToLower().Contains(filterModel.search.ToLower()));
+            }
+
+            if (!String.IsNullOrEmpty(filterModel.brand))
+            {
+                product = product.Where(n =>
+                        n.Brandid == filterModel.brand);
+            }
+
+            if (!String.IsNullOrEmpty(filterModel.category))
+            {
+                product = product.Where(n =>
+                        n.Categoryid == filterModel.category);
+            }
+
             var productModel = _mapper.Map<IEnumerable<ProductModel>>(product);
             PagedList<ProductModel> model = new PagedList<ProductModel>(productModel.AsQueryable(), pageNumber, Const.PageSize);
+
+            var brands = await _unitOfWork.GetRepository<Brand>().GetAllAsync(selector: s => new { s.Brandid, s.Brandname });
+            ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
+
+            var catergories = await _unitOfWork.GetRepository<Category>().GetAllAsync(selector: s => new { s.Categoryid, s.Categoryname });
+            ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
             return View(model);
         }
 

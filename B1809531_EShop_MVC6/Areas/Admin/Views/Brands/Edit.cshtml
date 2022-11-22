@@ -5,48 +5,56 @@
     ViewData["Title"] = "Edit";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
+<div class="row d-flex justify-content-center">
 
-<h1>Chỉnh sửa</h1>
+    <div class="col-lg-6">
 
-<h4>Thương hiệu</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Brandid" />
-            <input type="hidden" asp-for="Brandcreateddate" />
-            <div class="form-group">
-                <label class="control-label">Tên:</label>
-                <input asp-for="Brandname" class="form-control" />
-                <span asp-validation-for="Brandname" class="text-danger"></span>
+        <!-- Default Card Example -->
+        <div class="card mb-4">
+
+            <div class="card-header py-3">
+                <h1 class="text-primary">Chỉnh sửa</h1>
+                <h4 class="text-primary">Thương hiệu</h4>
             </div>
 
-            <div class="form-group">
-                <label class="control-label">Ảnh hiện tại: </label>
-                <input asp-for="Brandimage" class="form-control" readonly />
-                <img src="/@(GetPath.BrandImage + Model.Brandimage)" class="img-edit" />
+            <div class="card-body">
 
-            </div>
+                <form asp-action="Edit" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Brandid" />
+                    <input type="hidden" asp-for="Brandcreateddate" />
+                    <div class="form-group">
+                        <label class="control-label">Tên:</label>
+                        <input asp-for="Brandname" class="form-control" />
+                        <span asp-validation-for="Brandname" class="text-danger"></span>
+                    </div>
 
-            <div class="form-group">
-                <label class="control-label">Chọn ảnh khác:</label>
-                <input type="file" asp-for="BrandImageFile" accept="image/*" class="form-control-file" onchange="showPreview(event)" />
-                <img id="file-ip-1-preview" class="img-edit" />
-            </div>
+                    <div class="form-group">
+                        <label class="control-label">Ảnh hiện tại: </label>
+                        <input asp-for="Brandimage" class="form-control" readonly />
+                        <img src="/@(GetPath.BrandImage + Model.Brandimage)" class="img-edit" />
 
-            <div class="form-group">
-                <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('BrandImageFile')"> x Bỏ ảnh đã chọn</button>
-            </div>
+                    </div>
 
-            <div class="form-group">
-                <div>
-                    <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
-                </div>
+                    <div class="form-group">
+                        <label class="control-label">Chọn ảnh khác:</label>
+                        <input type="file" asp-for="BrandImageFile" accept="image/*" class="form-control-file" onchange="showPreview(event)" />
+                        <img id="file-ip-1-preview" class="img-edit" />
+                    </div>
+
+                    <div class="form-group">
+                        <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('BrandImageFile')"> x Bỏ ảnh đã chọn</button>
+                    </div>
+
+                    <div class="form-group">
+                        <div>
+                            <input type="submit" value="Lưu thay đổi" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
-
 

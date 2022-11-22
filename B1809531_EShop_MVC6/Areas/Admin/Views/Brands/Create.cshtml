@@ -5,37 +5,46 @@
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Thêm mới</h1>
+<div class="row d-flex justify-content-center">
 
-<h4>Thương hiệu</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label class="control-label"> Tên: </label>
-                <input asp-for="Brandname" class="form-control" />
-                <span asp-validation-for="Brandname" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label class="control-label"> Hình ảnh: </label>
-                <input type="file" asp-for="BrandImageFile" accept="image/*" class="form-control-file" onchange="showPreview(event)" />
-                <img id="file-ip-1-preview" class="img-edit" />
+    <div class="col-lg-6">
+
+        <!-- Default Card Example -->
+        <div class="card mb-4">
+
+            <div class="card-header py-3">
+                <h1 class="text-primary">Thêm mới</h1>
+                <h4 class="text-primary">Thương hiệu</h4>
             </div>
 
-            <div class="form-group">
-                <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('BrandImageFile')"> x Bỏ ảnh đã chọn</button>
-            </div>
+            <div class="card-body">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group">
+                        <label class="control-label"> Tên: </label>
+                        <input asp-for="Brandname" class="form-control" />
+                        <span asp-validation-for="Brandname" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label"> Hình ảnh: </label>
+                        <input type="file" asp-for="BrandImageFile" accept="image/*" class="form-control-file" onchange="showPreview(event)" />
+                        <img id="file-ip-1-preview" class="img-edit" />
+                    </div>
 
-            <div class="form-group">
-                <div>
-                    <input type="submit" value="Thêm" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
-                </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('BrandImageFile')"> x Bỏ ảnh đã chọn</button>
+                    </div>
 
+                    <div class="form-group">
+                        <div>
+                            <input type="submit" value="Thêm" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+                        </div>
+
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
 

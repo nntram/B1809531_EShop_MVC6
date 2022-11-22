@@ -5,6 +5,8 @@
 @{
     ViewData["Title"] = "Danh sách các sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    SelectList brandList = ViewBag.Brands;
+    SelectList categoryList = ViewBag.Categories;
 }
 
 
@@ -18,30 +20,55 @@
             <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
                 <div class="row pb-3">
                     <div class="col-sm-12 col-md-6">
-
                         <a asp-action="Create" class="btn btn-primary">Thêm mới</a>
-
                     </div>
 
+                    <div class="col-sm-12 col-md-6">
+                        <div id="dataTable_filter" class="dataTables_filter">
+                            <label class="font-weight-bold">
+                                Tìm kiếm:
+                            </label>
+                            <div class="input-group">
+                                <input type="search" class="form-control small" placeholder="" aria-controls="dataTable">
+                                <button class="btn btn-primary" type="button">
+                                    <i class="fas fa-search fa-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12 col-md-6">
                         <div class="dataTables_length" id="dataTable_length">
+                            <label class="font-weight-bold">
+                                Thương hiệu
+                            </label>
                             <label>
-                                Số dòng hiển thị:
-                                <select name="dataTable_length" aria-controls="dataTable" class="custom-select custom-select-sm form-control form-control-sm">
-                                    <option value="10">10</option>
-                                    <option value="25">25</option>
-                                    <option value="50">50</option>
-                                    <option value="100">100</option>
+                                <select name="Brandid" aria-controls="dataTable" class="custom-select custom-select-sm form-control form-control-sm">
+                                    <option value="all" selected>Tất cả</option>
+                                    @foreach (var item in brandList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
                                 </select>
+
                             </label>
                         </div>
                     </div>
                     <div class="col-sm-12 col-md-6">
-                        <div id="dataTable_filter" class="dataTables_filter">
+                        <div class="dataTables_length" id="dataTable_length">
+                            <label class="font-weight-bold">
+                                Loại sản phẩm
+                            </label>
                             <label>
-                                Search:<input type="search" class="form-control form-control-sm" placeholder="" aria-controls="dataTable">
+                                <select name="Categoryid" aria-controls="dataTable" class="custom-select custom-select-sm form-control form-control-sm">
+                                    <option value="all" selected>Tất cả</option>
+                                    @foreach (var item in categoryList)
+                                    {
+                                        <option value="@item.Value">@item.Text</option>
+                                    }
+                                </select>
+
                             </label>
                         </div>
                     </div>
@@ -104,8 +131,21 @@
                     </div>
                 </div>
 
+
+                @{
+                    var parms = new Dictionary<string, string>{
+                        {"search", @Context.Request.Query["search"]},
+                        {"brand", @Context.Request.Query["brand"]},
+                        {"category", @Context.Request.Query["category"]}
+               
+                    };
+                }
                 <div class="pull-right">
-                    <pager class="pager-container" list="@Model" options="@PagedListRenderOptions.Bootstrap4Full" asp-action="Index" asp-controller="Products" />
+                    <pager class="pager-container" list="@Model" options="@PagedListRenderOptions.Bootstrap4Full" asp-action="Index"
+                           asp-controller="Products" asp-all-route-data="@parms" 
+                           />
+                           
+                          
                 </div>
 
             </div>
