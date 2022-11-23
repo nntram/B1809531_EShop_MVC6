@@ -7,12 +7,12 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("ORDER")]
-    [Index("Customerid", Name = "CUSTOMNER_ORDER_FK")]
-    [Index("Paymenttypeid", Name = "ORDER_PAYMENT_FK")]
-    [Index("Shipmentstatusid", Name = "ORDER_SHIPMENTSTATUS_FK")]
-    [Index("Shipmenttypeid", Name = "ORDER_SHIPMENTTYPE_FK")]
-    [Index("Voucherid", Name = "ORDER_VOUCHER_FK")]
-    [Index("Wardid", Name = "ORDER_WARD_FK")]
+    [Index(nameof(Customerid), Name = "CUSTOMNER_ORDER_FK")]
+    [Index(nameof(Paymenttypeid), Name = "ORDER_PAYMENT_FK")]
+    [Index(nameof(Shipmentstatusid), Name = "ORDER_SHIPMENTSTATUS_FK")]
+    [Index(nameof(Shipmenttypeid), Name = "ORDER_SHIPMENTTYPE_FK")]
+    [Index(nameof(Voucherid), Name = "ORDER_VOUCHER_FK")]
+    [Index(nameof(Wardid), Name = "ORDER_WARD_FK")]
     public partial class Order
     {
         public Order()
@@ -55,29 +55,29 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("ORDERSHIPCOST")]
         public int? Ordershipcost { get; set; }
 
-        [ForeignKey("Customerid")]
+        [ForeignKey(nameof(Customerid))]
         [InverseProperty("Orders")]
         public virtual Customer Customer { get; set; } = null!;
-        [ForeignKey("Paymenttypeid")]
+        [ForeignKey(nameof(Paymenttypeid))]
         [InverseProperty("Orders")]
         public virtual Paymenttype Paymenttype { get; set; } = null!;
-        [ForeignKey("Shipmentstatusid")]
+        [ForeignKey(nameof(Shipmentstatusid))]
         [InverseProperty("Orders")]
         public virtual Shipmentstatus Shipmentstatus { get; set; } = null!;
-        [ForeignKey("Shipmenttypeid")]
+        [ForeignKey(nameof(Shipmenttypeid))]
         [InverseProperty("Orders")]
         public virtual Shipmenttype Shipmenttype { get; set; } = null!;
-        [ForeignKey("Voucherid")]
+        [ForeignKey(nameof(Voucherid))]
         [InverseProperty("Orders")]
         public virtual Voucher Voucher { get; set; } = null!;
-        [ForeignKey("Wardid")]
+        [ForeignKey(nameof(Wardid))]
         [InverseProperty("Orders")]
         public virtual Ward Ward { get; set; } = null!;
-        [InverseProperty("Order")]
+        [InverseProperty(nameof(Invoice.Order))]
         public virtual ICollection<Invoice> Invoices { get; set; }
-        [InverseProperty("Order")]
+        [InverseProperty(nameof(Orderitem.Order))]
         public virtual ICollection<Orderitem> Orderitems { get; set; }
-        [InverseProperty("Order")]
+        [InverseProperty(nameof(Paymentdetail.Order))]
         public virtual ICollection<Paymentdetail> Paymentdetails { get; set; }
     }
 }

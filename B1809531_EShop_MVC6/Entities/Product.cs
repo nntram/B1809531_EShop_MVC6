@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("PRODUCT")]
-    [Index("Brandid", Name = "PRODUCT_BRAND_FK")]
-    [Index("Categoryid", Name = "PRODUCT_CATEGORY_FK")]
+    [Index(nameof(Brandid), Name = "PRODUCT_BRAND_FK")]
+    [Index(nameof(Categoryid), Name = "PRODUCT_CATEGORY_FK")]
     public partial class Product
     {
         public Product()
@@ -50,25 +50,25 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("PRODUCTISHOT")]
         public bool? Productishot { get; set; }
 
-        [ForeignKey("Brandid")]
+        [ForeignKey(nameof(Brandid))]
         [InverseProperty("Products")]
         public virtual Brand Brand { get; set; } = null!;
-        [ForeignKey("Categoryid")]
+        [ForeignKey(nameof(Categoryid))]
         [InverseProperty("Products")]
         public virtual Category Category { get; set; } = null!;
-        [InverseProperty("Product")]
+        [InverseProperty(nameof(Cartitem.Product))]
         public virtual ICollection<Cartitem> Cartitems { get; set; }
-        [InverseProperty("Product")]
+        [InverseProperty(nameof(Discount.Product))]
         public virtual ICollection<Discount> Discounts { get; set; }
-        [InverseProperty("Product")]
+        [InverseProperty(nameof(Invoiceitem.Product))]
         public virtual ICollection<Invoiceitem> Invoiceitems { get; set; }
-        [InverseProperty("Product")]
+        [InverseProperty(nameof(Orderitem.Product))]
         public virtual ICollection<Orderitem> Orderitems { get; set; }
-        [InverseProperty("Product")]
+        [InverseProperty(nameof(Productimage.Product))]
         public virtual ICollection<Productimage> Productimages { get; set; }
-        [InverseProperty("Product")]
+        [InverseProperty(nameof(Review.Product))]
         public virtual ICollection<Review> Reviews { get; set; }
-        [InverseProperty("Product")]
+        [InverseProperty(nameof(Warehousereceiptitem.Product))]
         public virtual ICollection<Warehousereceiptitem> Warehousereceiptitems { get; set; }
     }
 }

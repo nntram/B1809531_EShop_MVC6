@@ -2,7 +2,7 @@
 
 namespace B1809531_EShop_MVC6.Models
 {
-    public class BrandCreateModel
+    public class BrandUpdateModel
     {
         [StringLength(64)]
         public string? Brandid { get; set; }
@@ -14,6 +14,6 @@ namespace B1809531_EShop_MVC6.Models
         [StringLength(256)]
         public string? Brandimage { get; set; }
 
-        public IFormFile BrandImageFile { get; set; }
+        public IFormFile? BrandImageFile { get; set; }
     }
 }

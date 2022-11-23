@@ -36,7 +36,7 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("VOUCHERINACTIVE")]
         public bool? Voucherinactive { get; set; }
 
-        [InverseProperty("Voucher")]
+        [InverseProperty(nameof(Order.Voucher))]
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

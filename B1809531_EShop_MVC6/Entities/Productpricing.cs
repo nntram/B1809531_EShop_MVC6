@@ -8,7 +8,7 @@ namespace B1809531_EShop_MVC6.Entities
 {
     [Keyless]
     [Table("PRODUCTPRICING")]
-    [Index("Productid", Name = "PROCDUCT_PRICING_FK")]
+    [Index(nameof(Productid), Name = "PROCDUCT_PRICING_FK")]
     public partial class Productpricing
     {
         [Column("PRODUCTID")]
@@ -28,7 +28,7 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("PRODUCTPRICINGCREATEDDATE")]
         public long? Productpricingcreateddate { get; set; }
 
-        [ForeignKey("Productid")]
+        [ForeignKey(nameof(Productid))]
         public virtual Product Product { get; set; } = null!;
     }
 }

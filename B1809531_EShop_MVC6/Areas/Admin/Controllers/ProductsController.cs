@@ -7,9 +7,8 @@ using B1809531_EShop_MVC6.Models;
 using B1809531_EShop_MVC6.Helpers;
 using B1809531_EShop_MVC6.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using PagedList.Core;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using X.PagedList;
 
 namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 {
@@ -19,10 +18,10 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileManagerServies _fileManagerService;
-        public  readonly INotyfService _notifyService;
+        public readonly INotyfService _notifyService;
 
-        public ProductsController(IUnitOfWork unitOfWork, IMapper mapper, 
-            IFileManagerServies fileManagerService, 
+        public ProductsController(IUnitOfWork unitOfWork, IMapper mapper,
+            IFileManagerServies fileManagerService,
             INotyfService notifyService)
         {
             _unitOfWork = unitOfWork;
@@ -31,42 +30,87 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             _notifyService = notifyService;
         }
 
+        public IActionResult AjaxIndex(int page = 1)
+        {
+            var listPaged = GetPagedNames(page);
+            ViewBag.Names = listPaged;
+            return View();
+        }
+
+        public IActionResult GetOnePageOfNames(int page = 1)
+        {
+            var listPaged = GetPagedNames(page);
+            ViewBag.Names = listPaged;
+            return PartialView("_NameListPartial", ViewBag.Names);
+        }
+
+        public IActionResult Error()
+        {
+            return View();
+        }
+
+        protected IPagedList<string> GetPagedNames(int? page)
+        {
+            // return a 404 if user browses to before the first page
+            if (page.HasValue && page < 1)
+                return null;
+
+            // retrieve list from database/whereverand
+            var listUnpaged = GetStuffFromDatabase();
+
+            // page the list
+            const int pageSize = 20;
+            var listPaged = listUnpaged.ToPagedList(page ?? 1, pageSize);
+
+            // return a 404 if user browses to pages beyond last page. special case first page if no items exist
+            if (listPaged.PageNumber != 1 && page.HasValue && page > listPaged.PageCount)
+                return null;
+
+            return listPaged;
+        }
+
+        protected IEnumerable<string> GetStuffFromDatabase()
+        {
+            var sampleData = System.IO.File.ReadAllText("Names.txt");
+            return sampleData.Split('\n');
+        }
+
         // GET: Admin/Products
         public async Task<IActionResult> Index(ProductFilterModel filterModel)
         {
             var pageNumber = filterModel.page ?? 1;
-            var product = await _unitOfWork.GetRepository<Product>().GetAllAsync(
+            var product = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
                     predicate: source => source.Productinacitve == true,
                     include: source => source.Include(m => m.Productimages),
-                    orderBy: n => n.OrderByDescending(p => p.Productcreateddate)) as IEnumerable<Product>;
+                    orderBy: n => n.OrderByDescending(p => p.Productcreateddate))).Items;
 
-            if (!String.IsNullOrEmpty(filterModel.search))
-            {
-                product = product.Where(n => 
-                        n.Productname.ToLower().Contains(filterModel.search.ToLower()));
-            }
+            //if (!String.IsNullOrEmpty(filterModel.search))
+            //{
+            //    product = product.Where(n =>
+            //            n.Productname.ToLower().Contains(filterModel.search.ToLower()));
+            //}
 
-            if (!String.IsNullOrEmpty(filterModel.brand))
-            {
-                product = product.Where(n =>
-                        n.Brandid == filterModel.brand);
-            }
+            //if (!String.IsNullOrEmpty(filterModel.brand))
+            //{
+            //    product = product.Where(n =>
+            //            n.Brandid == filterModel.brand);
+            //}
 
-            if (!String.IsNullOrEmpty(filterModel.category))
-            {
-                product = product.Where(n =>
-                        n.Categoryid == filterModel.category);
-            }
+            //if (!String.IsNullOrEmpty(filterModel.category))
+            //{
+            //    product = product.Where(n =>
+            //            n.Categoryid == filterModel.category);
+            //}
 
             var productModel = _mapper.Map<IEnumerable<ProductModel>>(product);
-            PagedList<ProductModel> model = new PagedList<ProductModel>(productModel.AsQueryable(), pageNumber, Const.PageSize);
+            //PagedList<ProductModel> model = new PagedList<ProductModel>(productModel.AsQueryable(), pageNumber, Const.PageSize);
 
-            var brands = await _unitOfWork.GetRepository<Brand>().GetAllAsync(selector: s => new { s.Brandid, s.Brandname });
+            var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(selector: s => new { s.Brandid, s.Brandname })).Items;
             ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
 
-            var catergories = await _unitOfWork.GetRepository<Category>().GetAllAsync(selector: s => new { s.Categoryid, s.Categoryname });
+            var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(selector: s => new { s.Categoryid, s.Categoryname })).Items;
             ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
-            return View(model);
+            return View(productModel);
         }
 
         // GET: Admin/Products/Details/5
@@ -78,12 +122,12 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             }
 
             var product = await _unitOfWork.GetRepository<Product>()
-                .GetFirstOrDefaultAsync (include: source => source
+                .GetFirstOrDefaultAsync(include: source => source
                 .Include(m => m.Productimages)
                 .Include(m => m.Brand)
-                .Include(m => m.Category), 
+                .Include(m => m.Category),
                 predicate: m => m.Productid == id);
-                
+
             if (product == null)
             {
                 return NotFound();
@@ -98,11 +142,11 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             return View();
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] ProductCreateModel productCreateModel)
-        {                 
+        {
             //if (productCreateModel.ProductImageFile != null )
             //{
             //    var checkImageFile = FileValid.IsImageValid(productCreateModel.ProductImageFile);
@@ -113,9 +157,9 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             //    }
 
             //}
-       
+
             var product = _mapper.Map<Product>(productCreateModel);
-            
+
             if (ModelState.IsValid)
             {
                 if (ProductNameExists(productCreateModel.Productname))
@@ -139,11 +183,11 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
                 _unitOfWork.GetRepository<Product>().Insert(product);
                 await _unitOfWork.SaveChangesAsync();
-               
+
                 _notifyService.Success("Thêm thành công.");
                 return RedirectToAction(nameof(Index));
             }
-            
+
             _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
             return View(productCreateModel);
         }
@@ -165,7 +209,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
             return View(_mapper.Map<ProductCreateModel>(product));
         }
-      
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([FromForm] ProductCreateModel productCreateModel)
@@ -223,7 +267,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     //}
 
                     _unitOfWork.GetRepository<Product>().Update(product);
-                    await _unitOfWork.SaveChangesAsync();                   
+                    await _unitOfWork.SaveChangesAsync();
 
                     _notifyService.Success("Chỉnh sửa thành công.");
                     return RedirectToAction(nameof(Index));
@@ -233,7 +277,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     _notifyService.Error("Đã xảy ra lỗi.");
                     return RedirectToAction(nameof(Index));
                 }
-               
+
             }
 
             _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
@@ -270,12 +314,8 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             var product = await _unitOfWork.GetRepository<Product>().FindAsync(id);
             if (product != null)
             {
-                var product_Products = _unitOfWork.GetRepository<Product>().Exists(n => n.Productid == id);
-                if (product_Products)
-                {
-                    _notifyService.Error("Không thể xóa do ràng buộc dữ liệu.");
-                    return RedirectToAction(nameof(Index));
-                }
+                //kiem tra 
+
                 _unitOfWork.GetRepository<Product>().Delete(product);
 
                 //if(product.Productimage != null && product.Productimage != "")
@@ -290,17 +330,22 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
         private bool ProductExists(string id)
         {
-            return _unitOfWork.GetRepository<Product>().Exists(n => n.Productid == id);
+            var product = _unitOfWork.GetRepository<Product>().Find(id);
+            return product != null;
         }
 
         private bool ProductNameExists(string name)
         {
-            return _unitOfWork.GetRepository<Product>().Exists(n => n.Productname.ToLower() == name.ToLower());
+            var product = _unitOfWork.GetRepository<Product>().GetFirstOrDefault(
+                                predicate: n => n.Productname.ToLower() == name.ToLower());
+            return product != null;
         }
 
         private bool ProductNameExists(string name, string id)
         {
-            return _unitOfWork.GetRepository<Product>().Exists(n => (n.Productname.ToLower() == name.ToLower() && n.Productid != id));
+             var product = _unitOfWork.GetRepository<Product>().GetFirstOrDefault(
+                                predicate: n => (n.Productname.ToLower() == name.ToLower() && n.Productid != id));
+            return product != null;
         }
     }
 }

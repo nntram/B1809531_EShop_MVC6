@@ -15,10 +15,10 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IFileManagerServies _fileManagerService;
-        public  readonly INotyfService _notifyService;
+        public readonly INotyfService _notifyService;
 
-        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper, 
-            IFileManagerServies fileManagerService, 
+        public CategoriesController(IUnitOfWork unitOfWork, IMapper mapper,
+            IFileManagerServies fileManagerService,
             INotyfService notifyService)
         {
             _unitOfWork = unitOfWork;
@@ -29,9 +29,9 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
         // GET: Admin/Categories
         public async Task<IActionResult> Index()
-        {            
-            var category = await _unitOfWork.GetRepository<Category>()
-                .GetAllAsync(orderBy: n => n.OrderByDescending(p => p.Categorycreateddate));
+        {
+            var category = (await _unitOfWork.GetRepository<Category>()
+                .GetPagedListAsync(orderBy: n => n.OrderByDescending(p => p.Categorycreateddate))).Items;
             return View(_mapper.Map<IEnumerable<CategoryModel>>(category));
         }
 
@@ -44,7 +44,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             }
 
             var category = await _unitOfWork.GetRepository<Category>()
-                .GetFirstOrDefaultAsync (predicate: m => m.Categoryid == id);
+                .GetFirstOrDefaultAsync(predicate: m => m.Categoryid == id);
             if (category == null)
             {
                 return NotFound();
@@ -59,12 +59,12 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             return View();
         }
 
-       
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] CategoryCreateModel categoryCreateModel)
-        {                 
-            if (categoryCreateModel.CategoryImageFile != null )
+        {
+            if (categoryCreateModel.CategoryImageFile != null)
             {
                 var checkImageFile = FileValid.IsImageValid(categoryCreateModel.CategoryImageFile);
                 if (!checkImageFile)
@@ -74,9 +74,9 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 }
 
             }
-       
+
             var category = _mapper.Map<Category>(categoryCreateModel);
-            
+
             if (ModelState.IsValid)
             {
                 if (CategoryNameExists(categoryCreateModel.Categoryname))
@@ -95,16 +95,16 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     else
                     {
                         _notifyService.Error("Đã xảy ra lỗi khi upload ảnh.");
-                    }    
+                    }
                 }
 
                 _unitOfWork.GetRepository<Category>().Insert(category);
                 await _unitOfWork.SaveChangesAsync();
-               
+
                 _notifyService.Success("Thêm thành công.");
                 return RedirectToAction(nameof(Index));
             }
-            
+
             _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
             return View(categoryCreateModel);
         }
@@ -124,55 +124,55 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            return View(_mapper.Map<CategoryCreateModel>(category));
+            return View(_mapper.Map<CategoryUpdateModel>(category));
         }
-      
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromForm] CategoryCreateModel categoryCreateModel)
+        public async Task<IActionResult> Edit([FromForm] CategoryUpdateModel categoryUpdateModel)
         {
-            if (!(categoryCreateModel.Categoryid is not null && CategoryExists(categoryCreateModel.Categoryid)))
+            if (!(categoryUpdateModel.Categoryid is not null && CategoryExists(categoryUpdateModel.Categoryid)))
             {
                 return NotFound();
             }
 
-            if (categoryCreateModel.CategoryImageFile != null)
+            if (categoryUpdateModel.CategoryImageFile != null)
             {
-                var checkImageFile = FileValid.IsImageValid(categoryCreateModel.CategoryImageFile);
+                var checkImageFile = FileValid.IsImageValid(categoryUpdateModel.CategoryImageFile);
                 if (!checkImageFile)
                 {
                     _notifyService.Error("Đã xảy ra lỗi. Định dạng ảnh không hợp lệ.");
-                    return View(categoryCreateModel);
+                    return View(categoryUpdateModel);
                 }
 
-                categoryCreateModel.Categoryimage = categoryCreateModel.CategoryImageFile.FileName;
+                categoryUpdateModel.Categoryimage = categoryUpdateModel.CategoryImageFile.FileName;
             }
 
             if (ModelState.IsValid)
             {
-                if (CategoryNameExists(categoryCreateModel.Categoryname, categoryCreateModel.Categoryid))
+                if (CategoryNameExists(categoryUpdateModel.Categoryname, categoryUpdateModel.Categoryid))
                 {
                     _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
-                    return View(categoryCreateModel);
+                    return View(categoryUpdateModel);
                 }
 
-                var category = await _unitOfWork.GetRepository<Category>().FindAsync(categoryCreateModel.Categoryid);
+                var category = await _unitOfWork.GetRepository<Category>().FindAsync(categoryUpdateModel.Categoryid);
                 if (category == null)
                 {
                     return NotFound();
                 }
 
                 var categoryImage = category.Categoryimage;
-                _mapper.Map(categoryCreateModel, category);
+                _mapper.Map(categoryUpdateModel, category);
                 try
                 {
-                    if (categoryCreateModel.CategoryImageFile?.Length > 0)
+                    if (categoryUpdateModel.CategoryImageFile?.Length > 0)
                     {
-                        var upLoadImage = await _fileManagerService.UploadSingleImage(categoryCreateModel.CategoryImageFile, GetPath.CategoryImage);
+                        var upLoadImage = await _fileManagerService.UploadSingleImage(categoryUpdateModel.CategoryImageFile, GetPath.CategoryImage);
                         if (upLoadImage.Length > 0)
                         {
                             category.Categoryimage = upLoadImage;
-                            if(categoryImage != null && categoryImage != "")
+                            if (categoryImage != null && categoryImage != "")
                             {
                                 _fileManagerService.DeleteSingleImage(GetPath.CategoryImage + categoryImage);
                             }
@@ -184,7 +184,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     }
 
                     _unitOfWork.GetRepository<Category>().Update(category);
-                    await _unitOfWork.SaveChangesAsync();                   
+                    await _unitOfWork.SaveChangesAsync();
 
                     _notifyService.Success("Chỉnh sửa thành công.");
                     return RedirectToAction(nameof(Index));
@@ -194,11 +194,11 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     _notifyService.Error("Đã xảy ra lỗi.");
                     return RedirectToAction(nameof(Index));
                 }
-               
+
             }
 
             _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
-            return View(categoryCreateModel);
+            return View(categoryUpdateModel);
         }
 
         // GET: Admin/Categories/Delete/5
@@ -231,15 +231,15 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             var category = await _unitOfWork.GetRepository<Category>().FindAsync(id);
             if (category != null)
             {
-                var category_Products = _unitOfWork.GetRepository<Product>().Exists(n => n.Categoryid == id);
-                if (category_Products)
+                var category_Products = await _unitOfWork.GetRepository<Product>().GetFirstOrDefaultAsync(predicate: n => n.Categoryid == id);
+                if (category_Products != null)
                 {
                     _notifyService.Error("Không thể xóa do ràng buộc dữ liệu.");
                     return RedirectToAction(nameof(Index));
                 }
                 _unitOfWork.GetRepository<Category>().Delete(category);
 
-                if(category.Categoryimage != null && category.Categoryimage != "")
+                if (category.Categoryimage != null && category.Categoryimage != "")
                 {
                     _fileManagerService.DeleteSingleImage(GetPath.CategoryImage + category.Categoryimage);
                 }
@@ -251,17 +251,22 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
         private bool CategoryExists(string id)
         {
-            return _unitOfWork.GetRepository<Category>().Exists(n => n.Categoryid == id);
+            var category = _unitOfWork.GetRepository<Category>().Find(id);
+            return category != null;
         }
 
         private bool CategoryNameExists(string name)
         {
-            return _unitOfWork.GetRepository<Category>().Exists(n => n.Categoryname.ToLower() == name.ToLower());
+            var category = _unitOfWork.GetRepository<Category>().GetFirstOrDefault(
+                               predicate: n => n.Categoryname.ToLower() == name.ToLower());
+            return category != null;
         }
 
         private bool CategoryNameExists(string name, string id)
         {
-            return _unitOfWork.GetRepository<Category>().Exists(n => (n.Categoryname.ToLower() == name.ToLower() && n.Categoryid != id));
+            var category = _unitOfWork.GetRepository<Category>().GetFirstOrDefault(
+                                predicate: n => (n.Categoryname.ToLower() == name.ToLower() && n.Categoryid != id));
+            return category != null;
         }
     }
 }

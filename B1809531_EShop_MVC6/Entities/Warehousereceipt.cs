@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("WAREHOUSERECEIPT")]
-    [Index("Supplierid", Name = "WAREHOUSERECEIPT_SUPPLIER_FK")]
+    [Index(nameof(Supplierid), Name = "WAREHOUSERECEIPT_SUPPLIER_FK")]
     public partial class Warehousereceipt
     {
         public Warehousereceipt()
@@ -26,10 +26,10 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("WAREHOUSERECEIPTCREATEDDATE")]
         public long? Warehousereceiptcreateddate { get; set; }
 
-        [ForeignKey("Supplierid")]
+        [ForeignKey(nameof(Supplierid))]
         [InverseProperty("Warehousereceipts")]
         public virtual Supplier Supplier { get; set; } = null!;
-        [InverseProperty("Warehousereceipt")]
+        [InverseProperty(nameof(Warehousereceiptitem.Warehousereceipt))]
         public virtual ICollection<Warehousereceiptitem> Warehousereceiptitems { get; set; }
         [InverseProperty("Warehousereceipt")]
         public virtual ICollection<staff> staff { get; set; }

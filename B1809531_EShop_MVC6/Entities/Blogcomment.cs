@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("BLOGCOMMENT")]
-    [Index("Blogid", Name = "BLOG_BLOGCOMMENT_FK")]
-    [Index("Customerid", Name = "CUSTOMER_BLOGCOMMENT_FK")]
+    [Index(nameof(Blogid), Name = "BLOG_BLOGCOMMENT_FK")]
+    [Index(nameof(Customerid), Name = "CUSTOMER_BLOGCOMMENT_FK")]
     public partial class Blogcomment
     {
         [Key]
@@ -25,10 +25,10 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(512)]
         public string? Blogcommentcontent { get; set; }
 
-        [ForeignKey("Blogid")]
+        [ForeignKey(nameof(Blogid))]
         [InverseProperty("Blogcomments")]
         public virtual Blog Blog { get; set; } = null!;
-        [ForeignKey("Customerid")]
+        [ForeignKey(nameof(Customerid))]
         [InverseProperty("Blogcomments")]
         public virtual Customer Customer { get; set; } = null!;
     }

@@ -9,11 +9,11 @@ namespace B1809531_EShop_MVC6.Helpers
         public AutoMapperProfile()
         {
             CreateMap<Brand, BrandModel>().ReverseMap();
-            CreateMap<Brand, Brand>();
+            CreateMap<Brand, BrandUpdateModel>().ReverseMap();
             CreateMap<Brand, BrandCreateModel>().ReverseMap();
 
             CreateMap<Category, CategoryModel>().ReverseMap();
-            CreateMap<Category, Category>();
+            CreateMap<Category, CategoryUpdateModel>().ReverseMap();
             CreateMap<Category, CategoryCreateModel>().ReverseMap();
 
             CreateMap<Product, ProductModel>().ReverseMap();

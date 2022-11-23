@@ -28,9 +28,9 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Categoryimage { get; set; }
 
-        [InverseProperty("Category")]
+        [InverseProperty(nameof(Categorydiscount.Category))]
         public virtual ICollection<Categorydiscount> Categorydiscounts { get; set; }
-        [InverseProperty("Category")]
+        [InverseProperty(nameof(Product.Category))]
         public virtual ICollection<Product> Products { get; set; }
     }
 }

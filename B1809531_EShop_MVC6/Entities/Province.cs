@@ -22,7 +22,7 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(128)]
         public string? Provincename { get; set; }
 
-        [InverseProperty("Province")]
+        [InverseProperty(nameof(District.Province))]
         public virtual ICollection<District> Districts { get; set; }
     }
 }

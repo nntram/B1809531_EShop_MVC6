@@ -1,5 +1,5 @@
 ﻿@using B1809531_EShop_MVC6.Helpers
-@model B1809531_EShop_MVC6.Models.BrandCreateModel
+@model B1809531_EShop_MVC6.Models.BrandUpdateModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -25,7 +25,7 @@
                     <input type="hidden" asp-for="Brandcreateddate" />
                     <div class="form-group">
                         <label class="control-label">Tên:</label>
-                        <input asp-for="Brandname" class="form-control" />
+                        <input asp-for="Brandname" class="form-control" required />
                         <span asp-validation-for="Brandname" class="text-danger"></span>
                     </div>
 

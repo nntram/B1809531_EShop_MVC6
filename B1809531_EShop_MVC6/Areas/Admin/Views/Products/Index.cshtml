@@ -1,6 +1,5 @@
 ﻿@using B1809531_EShop_MVC6.Helpers
-@using PagedList.Core.Mvc
-@model PagedList.Core.IPagedList<B1809531_EShop_MVC6.Models.ProductModel>
+@model IEnumerable<B1809531_EShop_MVC6.Models.ProductModel>
 
 @{
     ViewData["Title"] = "Danh sách các sản phẩm";
@@ -140,13 +139,12 @@
                
                     };
                 }
-                <div class="pull-right">
+               @* <div class="pull-right">
                     <pager class="pager-container" list="@Model" options="@PagedListRenderOptions.Bootstrap4Full" asp-action="Index"
                            asp-controller="Products" asp-all-route-data="@parms" 
-                           />
-                           
+                           />                          
                           
-                </div>
+                </div>*@
 
             </div>
         </div>

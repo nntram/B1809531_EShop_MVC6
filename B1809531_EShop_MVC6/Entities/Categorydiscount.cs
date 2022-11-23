@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("CATEGORYDISCOUNT")]
-    [Index("Brandid", Name = "CATEGORYDISCOUNT_BRAND_FK")]
-    [Index("Categoryid", Name = "CATEGORY_DISCOUNT_FK")]
+    [Index(nameof(Brandid), Name = "CATEGORYDISCOUNT_BRAND_FK")]
+    [Index(nameof(Categoryid), Name = "CATEGORY_DISCOUNT_FK")]
     public partial class Categorydiscount
     {
         [Key]
@@ -38,10 +38,10 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("CATEGORYDISCOUNTINACTIVE")]
         public bool? Categorydiscountinactive { get; set; }
 
-        [ForeignKey("Brandid")]
+        [ForeignKey(nameof(Brandid))]
         [InverseProperty("Categorydiscounts")]
         public virtual Brand Brand { get; set; } = null!;
-        [ForeignKey("Categoryid")]
+        [ForeignKey(nameof(Categoryid))]
         [InverseProperty("Categorydiscounts")]
         public virtual Category Category { get; set; } = null!;
     }

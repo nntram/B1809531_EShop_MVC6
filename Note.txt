@@ -5,3 +5,5 @@ Scaffold-DbContext “Data Source=WINDOWS\NGOCTRAM;Initial Catalog=naricosmetic;
  var errors = ModelState
                      .Where(x => x.Value.Errors.Count > 0)
                      .Select(x => new { x.Key, x.Value.Errors }).ToArray();
+
+$env:codegen_trace=1

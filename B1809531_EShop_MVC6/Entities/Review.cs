@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("REVIEW")]
-    [Index("Customerid", Name = "CUSTOMER_REVIEW_FK")]
-    [Index("Productid", Name = "PRODUCT_REVIEW_FK")]
+    [Index(nameof(Customerid), Name = "CUSTOMER_REVIEW_FK")]
+    [Index(nameof(Productid), Name = "PRODUCT_REVIEW_FK")]
     public partial class Review
     {
         [Key]
@@ -38,10 +38,10 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(512)]
         public string? Reviewphoto3 { get; set; }
 
-        [ForeignKey("Customerid")]
+        [ForeignKey(nameof(Customerid))]
         [InverseProperty("Reviews")]
         public virtual Customer Customer { get; set; } = null!;
-        [ForeignKey("Productid")]
+        [ForeignKey(nameof(Productid))]
         [InverseProperty("Reviews")]
         public virtual Product Product { get; set; } = null!;
     }

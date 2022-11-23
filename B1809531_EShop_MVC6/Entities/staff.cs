@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("STAFF")]
-    [Index("Warehousereceiptid", Name = "STAFF_WAREHOUSERECEIPT_FK")]
+    [Index(nameof(Warehousereceiptid), Name = "STAFF_WAREHOUSERECEIPT_FK")]
     public partial class staff
     {
         public staff()
@@ -46,12 +46,12 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(16)]
         public string? Staffidentification { get; set; }
 
-        [ForeignKey("Warehousereceiptid")]
+        [ForeignKey(nameof(Warehousereceiptid))]
         [InverseProperty("staff")]
         public virtual Warehousereceipt? Warehousereceipt { get; set; }
-        [InverseProperty("Staff")]
+        [InverseProperty(nameof(Invoice.Staff))]
         public virtual ICollection<Invoice> Invoices { get; set; }
-        [InverseProperty("Staff")]
+        [InverseProperty(nameof(StaffRole.Staff))]
         public virtual ICollection<StaffRole> StaffRoles { get; set; }
     }
 }

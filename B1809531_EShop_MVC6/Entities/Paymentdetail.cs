@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("PAYMENTDETAILS")]
-    [Index("Paymentdataid", Name = "PAYMENTDETAILS2_FK")]
-    [Index("Orderid", Name = "PAYMENTDETAILS_FK")]
+    [Index(nameof(Paymentdataid), Name = "PAYMENTDETAILS2_FK")]
+    [Index(nameof(Orderid), Name = "PAYMENTDETAILS_FK")]
     public partial class Paymentdetail
     {
         [Key]
@@ -26,11 +26,11 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Paymentdetailsvalue { get; set; }
 
-        [ForeignKey("Orderid")]
+        [ForeignKey(nameof(Orderid))]
         [InverseProperty("Paymentdetails")]
         public virtual Order Order { get; set; } = null!;
-        [ForeignKey("Paymentdataid")]
-        [InverseProperty("Paymentdetails")]
+        [ForeignKey(nameof(Paymentdataid))]
+        [InverseProperty(nameof(Paymentdatum.Paymentdetails))]
         public virtual Paymentdatum Paymentdata { get; set; } = null!;
     }
 }

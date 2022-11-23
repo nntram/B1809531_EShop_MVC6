@@ -1,5 +1,5 @@
 ﻿@using B1809531_EShop_MVC6.Helpers
-@model B1809531_EShop_MVC6.Models.CategoryCreateModel
+@model B1809531_EShop_MVC6.Models.CategoryUpdateModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -25,7 +25,7 @@
                     <input type="hidden" asp-for="Categorycreateddate" />
                     <div class="form-group">
                         <label class="control-label">Tên:</label>
-                        <input asp-for="Categoryname" class="form-control" />
+                        <input asp-for="Categoryname" class="form-control" required />
                         <span asp-validation-for="Categoryname" class="text-danger"></span>
                     </div>
 

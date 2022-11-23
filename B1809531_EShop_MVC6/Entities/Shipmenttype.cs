@@ -22,7 +22,7 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Shipmenttypename { get; set; }
 
-        [InverseProperty("Shipmenttype")]
+        [InverseProperty(nameof(Order.Shipmenttype))]
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

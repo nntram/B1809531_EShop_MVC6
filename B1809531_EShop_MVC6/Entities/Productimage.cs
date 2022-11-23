@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("PRODUCTIMAGE")]
-    [Index("Productid", Name = "PRODUCT_IMAGE_FK")]
+    [Index(nameof(Productid), Name = "PRODUCT_IMAGE_FK")]
     public partial class Productimage
     {
         [Key]
@@ -20,7 +20,7 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("PRODUCTIMAGEURL")]
         public string? Productimageurl { get; set; }
 
-        [ForeignKey("Productid")]
+        [ForeignKey(nameof(Productid))]
         [InverseProperty("Productimages")]
         public virtual Product Product { get; set; } = null!;
     }

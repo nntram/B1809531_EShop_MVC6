@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("CUSTOMER")]
-    [Index("Cartid", Name = "CUSTOMER_CART2_FK")]
-    [Index("Wardid", Name = "CUSTOMER_WARD_FK")]
+    [Index(nameof(Cartid), Name = "CUSTOMER_CART2_FK")]
+    [Index(nameof(Wardid), Name = "CUSTOMER_WARD_FK")]
     public partial class Customer
     {
         public Customer()
@@ -45,19 +45,19 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("CUSTOMERWARD")]
         public int? Customerward { get; set; }
 
-        [ForeignKey("Cartid")]
+        [ForeignKey(nameof(Cartid))]
         [InverseProperty("Customers")]
         public virtual Cart Cart { get; set; } = null!;
-        [ForeignKey("Wardid")]
+        [ForeignKey(nameof(Wardid))]
         [InverseProperty("Customers")]
         public virtual Ward Ward { get; set; } = null!;
-        [InverseProperty("Customer")]
+        [InverseProperty(nameof(Blogcomment.Customer))]
         public virtual ICollection<Blogcomment> Blogcomments { get; set; }
-        [InverseProperty("Customer")]
+        [InverseProperty(nameof(Invoice.Customer))]
         public virtual ICollection<Invoice> Invoices { get; set; }
-        [InverseProperty("Customer")]
+        [InverseProperty(nameof(Order.Customer))]
         public virtual ICollection<Order> Orders { get; set; }
-        [InverseProperty("Customer")]
+        [InverseProperty(nameof(Review.Customer))]
         public virtual ICollection<Review> Reviews { get; set; }
     }
 }

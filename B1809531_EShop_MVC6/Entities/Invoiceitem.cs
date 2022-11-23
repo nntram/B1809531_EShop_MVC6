@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("INVOICEITEM")]
-    [Index("Invoiceid", Name = "INVOICEITEM2_FK")]
-    [Index("Productid", Name = "INVOICEITEM_FK")]
+    [Index(nameof(Invoiceid), Name = "INVOICEITEM2_FK")]
+    [Index(nameof(Productid), Name = "INVOICEITEM_FK")]
     public partial class Invoiceitem
     {
         [Key]
@@ -27,10 +27,10 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("INVOICEITEMQUANTITY")]
         public int? Invoiceitemquantity { get; set; }
 
-        [ForeignKey("Invoiceid")]
+        [ForeignKey(nameof(Invoiceid))]
         [InverseProperty("Invoiceitems")]
         public virtual Invoice Invoice { get; set; } = null!;
-        [ForeignKey("Productid")]
+        [ForeignKey(nameof(Productid))]
         [InverseProperty("Invoiceitems")]
         public virtual Product Product { get; set; } = null!;
     }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("DISTRICT")]
-    [Index("Provinceid", Name = "PROVINCE_DISTRICT_FK")]
+    [Index(nameof(Provinceid), Name = "PROVINCE_DISTRICT_FK")]
     public partial class District
     {
         public District()
@@ -26,10 +26,10 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(128)]
         public string? Districtname { get; set; }
 
-        [ForeignKey("Provinceid")]
+        [ForeignKey(nameof(Provinceid))]
         [InverseProperty("Districts")]
         public virtual Province Province { get; set; } = null!;
-        [InverseProperty("District")]
+        [InverseProperty(nameof(Ward.District))]
         public virtual ICollection<Ward> Wards { get; set; }
     }
 }
