@@ -9,6 +9,7 @@ using B1809531_EShop_MVC6.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 {
@@ -30,87 +31,65 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             _notifyService = notifyService;
         }
 
-        public IActionResult AjaxIndex(int page = 1)
+        public async Task<IActionResult> Index(ProductFilterModel filter)
         {
-            var listPaged = GetPagedNames(page);
-            ViewBag.Names = listPaged;
-            return View();
+            var listPaged = await GetPaged(filter);           
+
+            var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(
+                        selector: s => new { s.Brandid, s.Brandname })).Items;
+            ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
+
+            var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(
+                        selector: s => new { s.Categoryid, s.Categoryname })).Items;
+            ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
+
+            return View(listPaged);
         }
 
-        public IActionResult GetOnePageOfNames(int page = 1)
+        public async Task<IActionResult> GetOnePage(ProductFilterModel filter)
         {
-            var listPaged = GetPagedNames(page);
-            ViewBag.Names = listPaged;
-            return PartialView("_NameListPartial", ViewBag.Names);
+            var listPaged = await GetPaged(filter);
+            return PartialView("_listPartial", listPaged);
         }
 
-        public IActionResult Error()
-        {
-            return View();
-        }
 
-        protected IPagedList<string> GetPagedNames(int? page)
+        protected async Task<IPagedList<ProductModel>> GetPaged(ProductFilterModel filter)
         {
-            // return a 404 if user browses to before the first page
-            if (page.HasValue && page < 1)
+            if (filter.page.HasValue && filter.page < 1)
                 return null;
 
-            // retrieve list from database/whereverand
-            var listUnpaged = GetStuffFromDatabase();
-
-            // page the list
-            const int pageSize = 20;
-            var listPaged = listUnpaged.ToPagedList(page ?? 1, pageSize);
-
-            // return a 404 if user browses to pages beyond last page. special case first page if no items exist
-            if (listPaged.PageNumber != 1 && page.HasValue && page > listPaged.PageCount)
-                return null;
-
-            return listPaged;
-        }
-
-        protected IEnumerable<string> GetStuffFromDatabase()
-        {
-            var sampleData = System.IO.File.ReadAllText("Names.txt");
-            return sampleData.Split('\n');
-        }
-
-        // GET: Admin/Products
-        public async Task<IActionResult> Index(ProductFilterModel filterModel)
-        {
-            var pageNumber = filterModel.page ?? 1;
             var product = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
                     predicate: source => source.Productinacitve == true,
                     include: source => source.Include(m => m.Productimages),
-                    orderBy: n => n.OrderByDescending(p => p.Productcreateddate))).Items;
+                    orderBy: n => n.OrderByDescending(p => p.Productcreateddate),
+                    pageSize: int.MaxValue)).Items as IEnumerable<Product>;
 
-            //if (!String.IsNullOrEmpty(filterModel.search))
-            //{
-            //    product = product.Where(n =>
-            //            n.Productname.ToLower().Contains(filterModel.search.ToLower()));
-            //}
+            if (!String.IsNullOrEmpty(filter.search))
+            {
+                product = product.Where(n =>
+                        n.Productname.ToLower().Contains(filter.search.ToLower()));
+            }
 
-            //if (!String.IsNullOrEmpty(filterModel.brand))
-            //{
-            //    product = product.Where(n =>
-            //            n.Brandid == filterModel.brand);
-            //}
+            if (!String.IsNullOrEmpty(filter.brand))
+            {
+                product = product.Where(n =>
+                        n.Brandid == filter.brand);
+            }
 
-            //if (!String.IsNullOrEmpty(filterModel.category))
-            //{
-            //    product = product.Where(n =>
-            //            n.Categoryid == filterModel.category);
-            //}
+            if (!String.IsNullOrEmpty(filter.category))
+            {
+                product = product.Where(n =>
+                        n.Categoryid == filter.category);
+            }
 
-            var productModel = _mapper.Map<IEnumerable<ProductModel>>(product);
-            //PagedList<ProductModel> model = new PagedList<ProductModel>(productModel.AsQueryable(), pageNumber, Const.PageSize);
+            var listUnpaged = _mapper.Map<IEnumerable<ProductModel>>(product);
 
-            var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(selector: s => new { s.Brandid, s.Brandname })).Items;
-            ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
+            var listPaged = listUnpaged.ToPagedList(filter.page ?? 1, Const.PageSize);
 
-            var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(selector: s => new { s.Categoryid, s.Categoryname })).Items;
-            ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
-            return View(productModel);
+            if (listPaged.PageNumber != 1 && filter.page.HasValue && filter.page > listPaged.PageCount)
+                return null;
+
+            return listPaged;
         }
 
         // GET: Admin/Products/Details/5
@@ -343,8 +322,8 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
         private bool ProductNameExists(string name, string id)
         {
-             var product = _unitOfWork.GetRepository<Product>().GetFirstOrDefault(
-                                predicate: n => (n.Productname.ToLower() == name.ToLower() && n.Productid != id));
+            var product = _unitOfWork.GetRepository<Product>().GetFirstOrDefault(
+                               predicate: n => (n.Productname.ToLower() == name.ToLower() && n.Productid != id));
             return product != null;
         }
     }

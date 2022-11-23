@@ -1,6 +1,6 @@
 ﻿@using B1809531_EShop_MVC6.Helpers
-@model IEnumerable<B1809531_EShop_MVC6.Models.ProductModel>
-
+@using X.PagedList;
+@model IPagedList<ProductModel>
 @{
     ViewData["Title"] = "Danh sách các sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -22,16 +22,13 @@
                         <a asp-action="Create" class="btn btn-primary">Thêm mới</a>
                     </div>
 
-                    <div class="col-sm-12 col-md-6">
+                    <div class="col-sm-12 col-md-5">
                         <div id="dataTable_filter" class="dataTables_filter">
                             <label class="font-weight-bold">
                                 Tìm kiếm:
                             </label>
                             <div class="input-group">
-                                <input type="search" class="form-control small" placeholder="" aria-controls="dataTable">
-                                <button class="btn btn-primary" type="button">
-                                    <i class="fas fa-search fa-sm"></i>
-                                </button>
+                                <input type="text" id="keyword" class="form-control small" placeholder="Nhập tên sản phẩm..." aria-controls="dataTable">                               
                             </div>
                         </div>
                     </div>
@@ -43,12 +40,8 @@
                                 Thương hiệu
                             </label>
                             <label>
-                                <select name="Brandid" aria-controls="dataTable" class="custom-select custom-select-sm form-control form-control-sm">
-                                    <option value="all" selected>Tất cả</option>
-                                    @foreach (var item in brandList)
-                                    {
-                                        <option value="@item.Value">@item.Text</option>
-                                    }
+                                <select name="brand" id = "brand" aria-controls="dataTable" asp-items="brandList" class="custom-select custom-select-sm form-control form-control-sm">
+                                    <option value="" selected>Tất cả</option>                                    
                                 </select>
 
                             </label>
@@ -60,93 +53,98 @@
                                 Loại sản phẩm
                             </label>
                             <label>
-                                <select name="Categoryid" aria-controls="dataTable" class="custom-select custom-select-sm form-control form-control-sm">
-                                    <option value="all" selected>Tất cả</option>
-                                    @foreach (var item in categoryList)
-                                    {
-                                        <option value="@item.Value">@item.Text</option>
-                                    }
+                                <select name="category" id= "category" asp-items="categoryList" aria-controls="dataTable" class="custom-select custom-select-sm form-control form-control-sm">
+                                    <option value="" selected>Tất cả</option>                               
                                 </select>
 
                             </label>
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-sm-12">
-                        <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th class="col-sm-12 col-md-4">
-                                        Tên
-                                    </th>
-                                    <th>
-                                        Hình ảnh
-                                    </th>
-                                    <th>
-                                        Số lượng
-                                    </th>
-                                    <th>
-                                        Giá niêm yết
-                                    </th>
-
-                                    <th>
-                                        Giá giảm
-                                    </th>
-
-
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Productname)
-                                        </td>
-                                        <td>
-                                            <img src="/@(GetPath.ProductImage+ (item.Productimages.FirstOrDefault().Productimageurl) )" class="list-image" />
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Productquantity)
-                                        </td>
-                                        <td>
-                                            @String.Format("{0:n0}", item.Productprice) VNĐ
-                                        </td>
-                                        <td>
-                                            @String.Format("{0:n0}", item.Productsaleprice) VNĐ
-                                        </td>
-
-                                        <td class="right">
-                                            <a asp-action="Details" asp-route-id="@item.Productid" class="btn btn-info">Chi tiết</a>
-                                            <a asp-action="Edit" asp-route-id="@item.Productid" class="btn btn-warning">Chỉnh sửa</a>
-                                            <a asp-action="Delete" asp-route-id="@item.Productid" class="btn btn-danger">Xóa</a>
-                                        </td>
-                                    </tr>
-                                }
-                            </tbody>
-                        </table>
-                    </div>
+                <div class="row" id="listContainer">
+                    <partial name="_listPartial" model="Model" />
                 </div>
-
-
-                @{
-                    var parms = new Dictionary<string, string>{
-                        {"search", @Context.Request.Query["search"]},
-                        {"brand", @Context.Request.Query["brand"]},
-                        {"category", @Context.Request.Query["category"]}
-               
-                    };
-                }
-               @* <div class="pull-right">
-                    <pager class="pager-container" list="@Model" options="@PagedListRenderOptions.Bootstrap4Full" asp-action="Index"
-                           asp-controller="Products" asp-all-route-data="@parms" 
-                           />                          
-                          
-                </div>*@
 
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function(){
+            $("#keyword").keyup(function(){
+                var strkeyword = $("#keyword").val()
+                var brandId = $("#brand").children(":selected").attr('value')
+                var categoryId = $("#category").children(":selected").attr('value')
+                $.ajax({
+                    url: "/Admin/Products/GetOnePage",
+                    datatype: "json",
+                    type: "GET",
+                    data: {
+                        search: strkeyword,
+                        brand: brandId,
+                        category: categoryId
+                    },
+                    async: true, 
+                    success: function (results){
+                        $("#listContainer").html("")
+                        $("#listContainer").html(results)
+                    },
+                    error: function (xhr){
+                        alert('error')
+                    }
+                })
+            })
+
+            $("#brand").change(function () {
+                var strkeyword = $("#keyword").val()
+                var brandId = $("#brand").children(":selected").attr('value')
+                var categoryId = $("#category").children(":selected").attr('value')
+                $.ajax({
+                    url: "/Admin/Products/GetOnePage",
+                    datatype: "json",
+                    type: "GET",
+                    data: {
+                        search: strkeyword,
+                        brand: brandId,
+                        category: categoryId
+                    },
+                    async: true,
+                    success: function (results) {
+                        $("#listContainer").html("")
+                        $("#listContainer").html(results)
+                    },
+                    error: function (xhr) {
+                        alert('error')
+                    }
+                })
+            })
+
+            $("#category").change(function () {
+                var strkeyword = $("#keyword").val()
+                var brandId = $("#brand").children(":selected").attr('value')
+                var categoryId = $("#category").children(":selected").attr('value')
+                $.ajax({
+                    url: "/Admin/Products/GetOnePage",
+                    datatype: "json",
+                    type: "GET",
+                    data: {
+                        search: strkeyword,
+                        brand: brandId,
+                        category: categoryId
+                    },
+                    async: true,
+                    success: function (results) {
+                        $("#listContainer").html("")
+                        $("#listContainer").html(results)
+                    },
+                    error: function (xhr) {
+                        alert('error')
+                    }
+                })
+            })
+
+        })
+    </script>
+}

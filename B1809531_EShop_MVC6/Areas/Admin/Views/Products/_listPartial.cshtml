@@ -1,0 +1,93 @@
+﻿@model IPagedList<ProductModel>
+@using B1809531_EShop_MVC6.Helpers;
+@using X.PagedList.Mvc.Core;
+@using X.PagedList;
+@using X.PagedList.Web.Common
+
+
+
+<div class="col-sm-12">
+    <table class="table table-bordered dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+        <thead>
+            <tr>
+                <th class="col-sm-12 col-md-4">
+                    Tên
+                </th>
+                <th>
+                    Hình ảnh
+                </th>
+                <th>
+                    Số lượng
+                </th>
+                <th>
+                    Giá niêm yết
+                </th>
+
+                <th>
+                    Giá giảm
+                </th>
+
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Productname)
+                    </td>
+                    <td>
+                        <img src="/@(GetPath.ProductImage + (item.Productimages.FirstOrDefault().Productimageurl) )" class="list-image" />
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Productquantity)
+                    </td>
+                    <td>
+                        @String.Format("{0:n0}", item.Productprice) VNĐ
+                    </td>
+                    <td>
+                        @String.Format("{0:n0}", item.Productsaleprice) VNĐ
+                    </td>
+
+                    <td class="right">
+                        <a asp-action="Details" asp-route-id="@item.Productid" class="btn btn-info">Chi tiết</a>
+                        <a asp-action="Edit" asp-route-id="@item.Productid" class="btn btn-warning">Chỉnh sửa</a>
+                        <a asp-action="Delete" asp-route-id="@item.Productid" class="btn btn-danger">Xóa</a>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+@Html.PagedListPager(
+    list: (IPagedList<ProductModel>)Model,
+    generatePageUrl: page => Url.Action("GetOnePage", new 
+                    {  page, 
+                       search = Context.Request.Query["search"],
+                       brand = Context.Request.Query["brand"],
+                       category = Context.Request.Query["category"]
+                    }),
+    options: PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(
+        pagedListRenderOptions: new PagedListRenderOptions
+        {
+            MaximumPageNumbersToDisplay = 5,
+            DisplayPageCountAndCurrentLocation = true,
+             UlElementClasses = new[]
+            {
+                "pagination pull-right"
+            },
+            ContainerDivClasses = new[]
+            {
+                "pagination-container col-sm-12"
+            }
+
+        },
+        ajaxOptions: new AjaxOptions
+        {
+            HttpMethod = "GET",
+            UpdateTargetId = "listContainer"
+        })
+)
