@@ -31,7 +31,8 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         public async Task<IActionResult> Index()
         {
             var brand = (await _unitOfWork.GetRepository<Brand>()
-                .GetPagedListAsync(orderBy: n => n.OrderByDescending(p => p.Brandcreateddate))).Items;
+                .GetPagedListAsync(orderBy: n => n.OrderByDescending(p => p.Brandcreateddate),
+                                    pageSize: int.MaxValue)).Items;
             return View(_mapper.Map<IEnumerable<BrandModel>>(brand));
         }
 
@@ -187,7 +188,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     await _unitOfWork.SaveChangesAsync();
 
                     _notifyService.Success("Chỉnh sửa thành công.");
-                    return RedirectToAction(nameof(Index));
+                    return RedirectToAction("Details", brandUpdateModel.Brandid);
                 }
                 catch (Exception)
                 {

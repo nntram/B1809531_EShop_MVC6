@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using X.PagedList;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Collections.Generic;
 
 namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 {
@@ -58,11 +59,24 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             if (filter.page.HasValue && filter.page < 1)
                 return null;
 
-            var product = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
+            IEnumerable<Product> product;
+            if (filter.isGetNotInActive)
+            {
+                product = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
+                     predicate: source => source.Productinacitve == false,
+                     include: source => source.Include(m => m.Productimages),
+                     orderBy: n => n.OrderByDescending(p => p.Productcreateddate),
+                     pageSize: int.MaxValue)).Items;
+            }
+            else
+            {
+                product = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
                     predicate: source => source.Productinacitve == true,
                     include: source => source.Include(m => m.Productimages),
                     orderBy: n => n.OrderByDescending(p => p.Productcreateddate),
-                    pageSize: int.MaxValue)).Items as IEnumerable<Product>;
+                    pageSize: int.MaxValue)).Items;
+            }
+          
 
             if (!String.IsNullOrEmpty(filter.search))
             {
@@ -82,6 +96,24 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                         n.Categoryid == filter.category);
             }
 
+            if(filter.isGetHot == true)
+            {
+                product = product.Where(n =>
+                        n.Productishot == true);
+            }
+
+            if (filter.isGetNotInActive == true)
+            {
+                product = product.Where(n =>
+                        n.Productinacitve == false);
+            }
+
+            if (filter.isGetOutOfStock == true)
+            {
+                product = product.Where(n =>
+                        n.Productquantity < 6);
+            }
+
             var listUnpaged = _mapper.Map<IEnumerable<ProductModel>>(product);
 
             var listPaged = listUnpaged.ToPagedList(filter.page ?? 1, Const.PageSize);
@@ -91,6 +123,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
             return listPaged;
         }
+
 
         // GET: Admin/Products/Details/5
         public async Task<IActionResult> Details(string id)
