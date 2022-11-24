@@ -1,6 +1,6 @@
 ﻿@using B1809531_EShop_MVC6.Helpers
 @using X.PagedList;
-@model IPagedList<ProductModel>
+@model IEnumerable<ProductModel>
 @{
     ViewData["Title"] = "Danh sách các sản phẩm";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
@@ -16,20 +16,20 @@
     <div class="p-1">
         <ul class="nav nav-tabs" id="product-nav">
             <li class="nav-item ">
-                <a class="nav-link m-0 font-weight-bold active" id ="getAll" href="#getAll">
+                <a class="nav-link m-0 font-weight-bold active" id="getAll" href="#getAll">
                     Tất cả sản phẩm
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link m-0 font-weight-bold" id="getOutOfStock" href="#getOutOfStock">
-                    Sản phẩm cần nhập thêm                   
+                    Sản phẩm cần nhập thêm
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link m-0 font-weight-bold" id="getHot" href="#getHot">
                     Sản phẩm hot
                 </a>
-            </li>  
+            </li>
             <li class="nav-item">
                 <a class="nav-link m-0 font-weight-bold" id="getNotInActive" href="#getNotInActive">
                     Sản phẩm ngừng kinh doanh
@@ -40,26 +40,13 @@
 
     <div class="card-body">
         <div class="table-responsive">
+
             <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
                 <div class="row pb-3">
                     <div class="col-sm-12 col-md-6">
                         <a asp-action="Create" class="btn btn-primary">Thêm mới</a>
                     </div>
 
-
-                </div>
-                <div class="row pb-3">
-
-                    <div class="col-sm-12 col-md-6">
-                        <div id="dataTable_filter" class="dataTables_filter">
-                            <label class="font-weight-bold">
-                                Tìm kiếm:
-                            </label>
-                            <div class="input-group col-md-8">
-                                <input type="text" id="keyword" class="form-control small" placeholder="Nhập tên sản phẩm..." aria-controls="dataTable">
-                            </div>
-                        </div>
-                    </div>
 
                 </div>
 
@@ -91,8 +78,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" id="listContainer">
-                    <partial name="_listPartial" model="Model" />
+                <div class="row">
+                    <div class="col-sm-12" id="listContainer">
+                        <partial name="_listPartial" model="Model" />
+                    </div>
                 </div>
 
             </div>
@@ -101,30 +90,57 @@
 </div>
 
 @section Scripts{
+    <script src="~/admin_assets/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/admin_assets/vendor/datatables/dataTables.bootstrap4.min.js"></script>
     <script>
         $(document).ready(function () {
+            $.fn.setDataTable = function () {
+                $("#dataTable").DataTable({
+                    "language": {
+                        "search": "<label class='font-weight-bold mb-0'>Tìm kiếm</label>",
+                        "zeroRecords": "Không tìm thấy dữ liệu phù hợp.",
+                        "emptyTable": "Không tìm thấy dữ liệu phù hợp.",
+                        "info": "Hiển thị từ _START_ đến _END_ trong số _TOTAL_ ",
+                        "infoEmpty": "Không có dữ liệu.",
+                        "infoFiltered": " - Lọc từ _MAX_ kết quả",
+                        "lengthMenu": '<label class="font-weight-bold">Số dòng hiể thị <select class = "custom-select custom-select-sm form-control form-control-sm">' +
+			             '<option value="10">10</option>'+
+			             '<option value="20">20</option>'+
+			             '<option value="30">30</option>'+
+			             '<option value="40">40</option>'+
+			             '<option value="50">50</option>'+
+			             '<option value="-1">Tất cả</option>'+
+			             '</select> </label>',
+                        "paginate": {
+                            "next": ">",
+                            "previous": "<",
+                            "first": "<<",
+                            "last": ">>"
+                        },
+                        "stateSave": true,                       
+                    },
+                   
+                })
+            }
+            $.fn.filterFunction = function () {
 
-            $.fn.filterFunction = function(){
-
-                let strkeyword = $("#keyword").val()
                 let brandId = $("#brand").children(":selected").attr('value')
                 let categoryId = $("#category").children(":selected").attr('value')
 
                 let id = $("#product-nav>li>a.active").attr("id")
-                let data =  {
-                        search: strkeyword,
-                        brand: brandId,
-                        category: categoryId
-                    }
-               
+                let data = {
+                    brand: brandId,
+                    category: categoryId
+                }
+
                 if (id == "getHot") {
-                    data.isGetHot =  true 
+                    data.isGetHot = true
                 }
                 if (id == "getOutOfStock") {
-                    data.isGetOutOfStock = true                    
+                    data.isGetOutOfStock = true
                 }
                 if (id == "getNotInActive") {
-                    data.isGetNotInActive = true                 
+                    data.isGetNotInActive = true
                 }
 
                 $.ajax({
@@ -134,8 +150,12 @@
                     data: data,
                     async: true,
                     success: function (results) {
+                        $("#dataTable").DataTable().destroy()
                         $("#listContainer").html("")
                         $("#listContainer").html(results)
+
+                        $.fn.setDataTable()
+
                     },
                     error: function (xhr) {
                         alert('error')
@@ -145,11 +165,11 @@
 
             $.fn.changeNavFunction = function (id) {
                 let data
-                if(id == "#getAll"){
+                if (id == "#getAll") {
                     data = {}
                 }
-                if (id == "#getHot"){
-                    data = { isGetHot: true}
+                if (id == "#getHot") {
+                    data = { isGetHot: true }
                 }
                 if (id == "#getOutOfStock") {
                     data = { isGetOutOfStock: true }
@@ -165,15 +185,18 @@
                     data: data,
                     async: true,
                     success: function (results) {
+                        $("#dataTable").DataTable().destroy()
+
                         $("#listContainer").html("")
                         $("#listContainer").html(results)
 
                         $("#category").val("")
                         $("#brand").val("")
-                        $("#keyword").val("")
 
                         $("#product-nav>li>a.active").removeClass("active")
                         $(id).addClass("active")
+
+                        $.fn.setDataTable()
                     },
                     error: function (xhr) {
                         alert('error')
@@ -181,10 +204,8 @@
                 })
             }
 
-            $("#keyword").keyup(function () {
-                $.fn.filterFunction()
-            })
-
+            $.fn.setDataTable()
+         
             $("#brand").change(function () {
                 $.fn.filterFunction()
             })
@@ -202,7 +223,7 @@
                 $.fn.changeNavFunction("#getHot")
             })
 
-             $("#getOutOfStock").click(function () {
+            $("#getOutOfStock").click(function () {
                 $.fn.changeNavFunction("#getOutOfStock")
             })
 

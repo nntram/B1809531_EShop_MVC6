@@ -54,13 +54,13 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         }
 
 
-        protected async Task<IPagedList<ProductModel>> GetPaged(ProductFilterModel filter)
+        protected async Task<IEnumerable<ProductModel>> GetPaged(ProductFilterModel filter)
         {
             if (filter.page.HasValue && filter.page < 1)
                 return null;
 
             IEnumerable<Product> product;
-            if (filter.isGetNotInActive)
+            if (filter.isGetNotInActive == true )
             {
                 product = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
                      predicate: source => source.Productinacitve == false,
@@ -114,14 +114,9 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                         n.Productquantity < 6);
             }
 
-            var listUnpaged = _mapper.Map<IEnumerable<ProductModel>>(product);
+            var listUnpaged = _mapper.Map<IEnumerable<ProductModel>>(product);           
 
-            var listPaged = listUnpaged.ToPagedList(filter.page ?? 1, Const.PageSize);
-
-            if (listPaged.PageNumber != 1 && filter.page.HasValue && filter.page > listPaged.PageCount)
-                return null;
-
-            return listPaged;
+            return listUnpaged;
         }
 
 
