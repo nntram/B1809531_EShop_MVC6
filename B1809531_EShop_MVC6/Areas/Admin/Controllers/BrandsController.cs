@@ -188,7 +188,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     await _unitOfWork.SaveChangesAsync();
 
                     _notifyService.Success("Chỉnh sửa thành công.");
-                    return RedirectToAction("Details", brandUpdateModel.Brandid);
+                    return RedirectToAction("Details", "Brands", new { id = brandUpdateModel.Brandid });
                 }
                 catch (Exception)
                 {

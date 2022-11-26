@@ -1,123 +1,121 @@
-﻿@model B1809531_EShop_MVC6.Models.ProductCreateModel
+﻿@model ProductCreateModel
 
 @{
     ViewData["Title"] = "Create";
     Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    SelectList brandList = ViewBag.Brands;
+    SelectList categoryList = ViewBag.Categories;
 }
 
-<h1>Thêm mới</h1>
+<div class="row d-flex justify-content-center">
+    <div class="col-lg-8">
+        <!-- Default Card Example -->
+        <div class="card">
+            <div class="card-header py-3">
+                <h1 class="text-primary">Thêm mới</h1>
+                <h4 class="text-primary">Sản phẩm</h4>
+            </div>
 
-<h4>Sản phẩm</h4>
-<hr />
-
-<form asp-action="Create" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <div class="row">
-        <div class="col-lg-6">
-            <!-- Default Card Example -->
-            <div class="card mb-4">
-                <div class="card-body">
+            <div class="card-body">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <div class="form-group">
                         <label class="control-label"> Tên: </label>
-                        <input asp-for="Productname" class="form-control" />
+                        <input asp-for="Productname" class="form-control w-75" />
                         <span asp-validation-for="Productname" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"> Thương hiệu: </label>
-                        <input asp-for="Brandid" class="form-control" />
-                        <span asp-validation-for="Brandid" class="text-danger"></span>
+                        <label class="control-label">
+                            Thương hiệu:
+                        </label>
+
+                        <select asp-for="Brandid" aria-controls="dataTable" asp-items="brandList"
+                                class="custom-select w-50 d-block">
+                        </select>
+
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"> Loại sản phẩm: </label>
-                        <input asp-for="Categoryid" class="form-control" />
-                        <span asp-validation-for="Categoryid" class="text-danger"></span>
+                        <label class="control-label">
+                            Loại sản phẩm:
+                        </label>
+
+                        <select asp-for="Categoryid" asp-items="categoryList" aria-controls="dataTable"
+                                class="custom-select w-50 d-block">
+                        </select>
+
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"> Số lượng: </label>
-                        <input asp-for="Productquantity" class="form-control" />
+                        <label class="control-label">
+                            Số lượng:
+                        </label>
+                        <input asp-for="Productquantity" class="form-control w-50" step="1" min="0" />
                         <span asp-validation-for="Productquantity" class="text-danger"></span>
+
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"> Giá niêm yết: </label>
-                        <input asp-for="Productprice" class="form-control" />
+                        <label class="control-label">
+                            Giá niêm yết:
+                        </label>
+                        <input asp-for="Productprice"  class="form-control w-50" step="1" min="0">
+                        <p>Thành tiền: <b id="price"></b> <i> (Đơn vị: VNĐ)</i></p>
                         <span asp-validation-for="Productprice" class="text-danger"></span>
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"> Giá giảm: </label>
-                        <input asp-for="Productsaleprice" class="form-control" />
+                        <label class="control-label">
+                            Giá giảm:
+                        </label>
+                        <input asp-for="Productsaleprice"  class="form-control w-50" step="1" min="0" />
+                        <p>Thành tiền: <b id="salePrice"></b> <i> (Đơn vị: VNĐ)</i></p>
                         <span asp-validation-for="Productsaleprice" class="text-danger"></span>
+
                     </div>
 
                     <div class="form-group">
-                        <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('ProductImageFile')"> x Bỏ ảnh đã chọn</button>
+                        <!-- Default switch -->
+                        <div class="custom-control custom-switch">
+                            <input type="checkbox" class="custom-control-input" asp-for="Productishot">
+                            <label class="custom-control-label" for="Productishot">Sản phẩm đang hot</label>
+                        </div>
                     </div>
-               </div>
-            </div>
 
-        </div>
-
-        <div class="col-lg-6">
-            <!-- Default Card Example -->
-            <div class="card mb-4">
-
-                <div class="card-body">
-
-                    <div class="form-group">
-                        <label class="control-label"> Tên: </label>
-                        <input asp-for="Productname" class="form-control" />
-                        <span asp-validation-for="Productname" class="text-danger"></span>
+                    <div class="form-group field" align="left">
+                        <label for="files" class="btn btn-outline-primary d-block w-50">
+                            <i class="fas fa-camera"></i>
+                            Chọn ảnh sản phẩm
+                        </label>
+                        <input type="file" id="files" name="ProductImageFile"
+                               class="input-file" multiple accept="image/*" />
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label"> Thương hiệu: </label>
-                        <input asp-for="Brandid" class="form-control" />
-                        <span asp-validation-for="Brandid" class="text-danger"></span>
+                        <label>
+                            Mô tả sản phẩm:
+                        </label>
+                        <textarea asp-for="Productdescribe">
+
+                        </textarea>
+
                     </div>
 
-                    <div class="form-group">
-                        <label class="control-label"> Loại sản phẩm: </label>
-                        <input asp-for="Categoryid" class="form-control" />
-                        <span asp-validation-for="Categoryid" class="text-danger"></span>
+                    <div class="form-group d-flex justify-content-center">
+                        <div>
+                            <input type="submit" value="Thêm" class="btn btn-primary" />
+                            <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
+                        </div>
                     </div>
-
-                    <div class="form-group">
-                        <label class="control-label"> Số lượng: </label>
-                        <input asp-for="Productquantity" class="form-control" />
-                        <span asp-validation-for="Productquantity" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label"> Giá niêm yết: </label>
-                        <input asp-for="Productprice" class="form-control" />
-                        <span asp-validation-for="Productprice" class="text-danger"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="control-label"> Giá giảm: </label>
-                        <input asp-for="Productsaleprice" class="form-control" />
-                        <span asp-validation-for="Productsaleprice" class="text-danger"></span>
-                    </div>
-
-
-                    <div class="form-group">
-                        <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('ProductImageFile')"> x Bỏ ảnh đã chọn</button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
-
     </div>
-
-    <div class="form-group d-flex justify-content-center">
-        <div>
-            <input type="submit" value="Thêm" class="btn btn-primary" />
-            <a asp-action="Index" class="btn btn-secondary">Trở lại</a>
-        </div>
-
-    </div>
-</form>
+</div>
+@section Scripts{
+    <script src="~/admin_assets/js/upload-multiple.js"></script>
+    <script src="~/admin_assets/js/price-display.js"></script>
+    <script src="~/admin_assets/js/ckeditor.js"></script>
+    <script src="~/admin_assets/js/ckeditor-setup.js"></script>   
+}

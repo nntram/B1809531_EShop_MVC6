@@ -19,6 +19,6 @@ namespace B1809531_EShop_MVC6.Models
         public bool? Productinacitve { get; set; }
         public int? Productsaleprice { get; set; }
         public IFormFileCollection ProductImageFile { get; set; }
-        public bool? Productishot { get; set; }
+        public bool Productishot { get; set; } = false;
     }
 }

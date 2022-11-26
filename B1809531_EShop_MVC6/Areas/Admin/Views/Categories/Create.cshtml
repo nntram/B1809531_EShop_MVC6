@@ -26,15 +26,15 @@
                         <span asp-validation-for="Categoryname" class="text-danger"></span>
                     </div>
                     <div class="form-group">
-                        <label class="control-label"> Hình ảnh: </label>
-                        <input type="file" asp-for="CategoryImageFile" accept="image/*" class="form-control-file" onchange="showPreview(event)" required />
+                        <label for="CategoryImageFile" class="btn btn-outline-primary d-block">
+                            <i class="fas fa-camera"></i>
+                            Chọn hình ảnh
+                        </label>
+                        <input type="file" asp-for="CategoryImageFile" accept="image/*" 
+                            class="input-file" onchange="showPreview(event)" required />
                         <img id="file-ip-1-preview" class="img-edit" />
                     </div>
-
-                    <div class="form-group">
-                        <button type="button" class="btn btn-outline-dark" onclick="cleanImageFile('CategoryImageFile')"> x Bỏ ảnh đã chọn</button>
-                    </div>
-
+                  
                     <div class="form-group">
                         <div>
                             <input type="submit" value="Thêm" class="btn btn-primary" />

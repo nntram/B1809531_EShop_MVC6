@@ -55,10 +55,7 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
 
         protected async Task<IEnumerable<ProductModel>> GetPaged(ProductFilterModel filter)
-        {
-            if (filter.page.HasValue && filter.page < 1)
-                return null;
-
+        {          
             IEnumerable<Product> product;
             if (filter.isGetNotInActive == true )
             {
@@ -75,13 +72,6 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     include: source => source.Include(m => m.Productimages),
                     orderBy: n => n.OrderByDescending(p => p.Productcreateddate),
                     pageSize: int.MaxValue)).Items;
-            }
-          
-
-            if (!String.IsNullOrEmpty(filter.search))
-            {
-                product = product.Where(n =>
-                        n.Productname.ToLower().Contains(filter.search.ToLower()));
             }
 
             if (!String.IsNullOrEmpty(filter.brand))
@@ -144,8 +134,15 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         }
 
         // GET: Admin/Products/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(
+                       selector: s => new { s.Brandid, s.Brandname })).Items;
+            ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
+
+            var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(
+                        selector: s => new { s.Categoryid, s.Categoryname })).Items;
+            ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
             return View();
         }
 
@@ -154,47 +151,14 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] ProductCreateModel productCreateModel)
         {
-            //if (productCreateModel.ProductImageFile != null )
-            //{
-            //    var checkImageFile = FileValid.IsImageValid(productCreateModel.ProductImageFile);
-            //    if (!checkImageFile)
-            //    {
-            //        _notifyService.Error("Đã xảy ra lỗi. Định dạng ảnh không hợp lệ.");
-            //        return View(productCreateModel);
-            //    }
 
-            //}
+            var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(
+                      selector: s => new { s.Brandid, s.Brandname })).Items;
+            ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
 
-            var product = _mapper.Map<Product>(productCreateModel);
-
-            if (ModelState.IsValid)
-            {
-                if (ProductNameExists(productCreateModel.Productname))
-                {
-                    _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
-                    return View(productCreateModel);
-                }
-
-                //if (productCreateModel.ProductImageFile?.Length > 0)
-                //{
-                //    var upLoadImage = await _fileManagerService.UploadSingleImage(productCreateModel.ProductImageFile, GetPath.ProductImage);
-                //    if (upLoadImage.Length > 0)
-                //    {
-                //        product.Productimage = upLoadImage;
-                //    }
-                //    else
-                //    {
-                //        _notifyService.Error("Đã xảy ra lỗi khi upload ảnh.");
-                //    }    
-                //}
-
-                _unitOfWork.GetRepository<Product>().Insert(product);
-                await _unitOfWork.SaveChangesAsync();
-
-                _notifyService.Success("Thêm thành công.");
-                return RedirectToAction(nameof(Index));
-            }
-
+            var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(
+                        selector: s => new { s.Categoryid, s.Categoryname })).Items;
+            ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
             _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
             return View(productCreateModel);
         }
