@@ -18,7 +18,7 @@
             </th>
 
             <th>
-                Giá sau giảm (VNĐ)
+                Ngày tạo
             </th>
 
             <th class="col-sm-12 col-md-3"></th>
@@ -37,7 +37,9 @@
                             @Html.DisplayFor(modelItem => item.Productname)
                         </td>
                         <td>
-                            <img src="/@(GetPath.ProductImage + (item.Productimages.FirstOrDefault().Productimageurl) )" class="list-image" />
+                            <img src="/@(GetPath.ProductImage + 
+                                        (item.Productimages.FirstOrDefault()!= null?item.Productimages.FirstOrDefault().Productimageurl:"") )" 
+                                 class="list-image" />
                         </td>
                         <td>
                             @Html.DisplayFor(modelItem => item.Productquantity)
@@ -46,7 +48,11 @@
                             @String.Format("{0:n0}", item.Productprice)
                         </td>
                         <td>
-                            @String.Format("{0:n0}", item.Productsaleprice)
+                           @{
+                            var datetime = DatetimeHelpers.UnixTimeStampToDateTime
+                                (item.Productcreateddate.HasValue ? item.Productcreateddate.Value : 0).ToString();
+                        }
+                        @(datetime)
                         </td>
 
                         <td class="right">

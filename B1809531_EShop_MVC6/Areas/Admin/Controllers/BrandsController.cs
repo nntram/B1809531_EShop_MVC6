@@ -76,16 +76,17 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
             }
 
-            var brand = _mapper.Map<Brand>(brandCreateModel);
+            
 
             if (ModelState.IsValid)
-            {
+            {               
                 if (BrandNameExists(brandCreateModel.Brandname))
                 {
                     _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
                     return View(brandCreateModel);
                 }
 
+                var brand = _mapper.Map<Brand>(brandCreateModel);
                 if (brandCreateModel.BrandImageFile?.Length > 0)
                 {
                     var upLoadImage = await _fileManagerService.UploadSingleImage(brandCreateModel.BrandImageFile, GetPath.BrandImage);

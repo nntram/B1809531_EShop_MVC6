@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 
 namespace B1809531_EShop_MVC6.Models
 {
@@ -11,13 +12,16 @@ namespace B1809531_EShop_MVC6.Models
         [StringLength(64)]
         public string Categoryid { get; set; } = null!;
         [StringLength(256)]
-        public string? Productname { get; set; }
-        public string? Productdescribe { get; set; }
-        public int? Productprice { get; set; }
-        public int? Productquantity { get; set; }
+        public string Productname { get; set; }
+        public string Productdescribe { get; set; }
+        [IntegerValidator(MinValue = 0)]   
+        public int Productprice { get; set; }
+        [IntegerValidator(MinValue = 0)]
+        public int Productquantity { get; set; }
         public long? Productcreateddate { get; set; }
         public bool? Productinacitve { get; set; }
-        public int? Productsaleprice { get; set; }
+        [IntegerValidator(MinValue = 0)]
+        public int Productsaleprice { get; set; }
         public IFormFileCollection ProductImageFile { get; set; }
         public bool Productishot { get; set; } = false;
     }

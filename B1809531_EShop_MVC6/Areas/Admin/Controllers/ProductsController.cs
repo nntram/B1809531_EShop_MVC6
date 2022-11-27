@@ -4,13 +4,10 @@ using Arch.EntityFrameworkCore.UnitOfWork;
 using AspNetCoreHero.ToastNotification.Abstractions;
 using AutoMapper;
 using B1809531_EShop_MVC6.Models;
-using B1809531_EShop_MVC6.Helpers;
 using B1809531_EShop_MVC6.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using X.PagedList;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Collections.Generic;
+using B1809531_EShop_MVC6.Helpers;
 
 namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 {
@@ -53,7 +50,6 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
             return PartialView("_listPartial", listPaged);
         }
 
-
         protected async Task<IEnumerable<ProductModel>> GetPaged(ProductFilterModel filter)
         {          
             IEnumerable<Product> product;
@@ -62,7 +58,6 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 product = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
                      predicate: source => source.Productinacitve == false,
                      include: source => source.Include(m => m.Productimages),
-                     orderBy: n => n.OrderByDescending(p => p.Productcreateddate),
                      pageSize: int.MaxValue)).Items;
             }
             else
@@ -151,14 +146,77 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] ProductCreateModel productCreateModel)
         {
-
             var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(
-                      selector: s => new { s.Brandid, s.Brandname })).Items;
+                       selector: s => new { s.Brandid, s.Brandname })).Items;
             ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
 
             var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(
                         selector: s => new { s.Categoryid, s.Categoryname })).Items;
             ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
+
+            if (productCreateModel.ProductImageFile != null)
+            {               
+                var checkImageFile =true; 
+                foreach(var imgFile in productCreateModel.ProductImageFile)
+                {
+                    if (!FileValid.IsImageValid(imgFile))
+                    {
+                        checkImageFile= false;
+                        break;
+                    }
+                }
+                
+                if (!checkImageFile)
+                {
+                    _notifyService.Error("Đã xảy ra lỗi. Định dạng ảnh không hợp lệ.");
+                    return View(productCreateModel);
+                }
+
+            }
+
+            if (ModelState.IsValid)
+            {
+                if (ProductNameExists(productCreateModel.Productname))
+                {
+                    _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
+                    return View(productCreateModel);
+                }
+                var product = _mapper.Map<Product>(productCreateModel);
+                product.Productid = Guid.NewGuid().ToString();
+                _unitOfWork.GetRepository<Product>().Insert(product);
+                await _unitOfWork.SaveChangesAsync();
+
+                if (productCreateModel.ProductImageFile != null)
+                {
+                    foreach (var imgFile in productCreateModel.ProductImageFile)
+                    {
+                        if (imgFile?.Length > 0)
+                        {
+                            var productImage = new Productimage(); 
+                            productImage.Productid = product.Productid;     
+                            var upLoadImage = await _fileManagerService.UploadSingleImage(imgFile, GetPath.ProductImage);
+                            if (upLoadImage.Length > 0)
+                            {
+                                productImage.Productimageurl= upLoadImage;
+                                _unitOfWork.GetRepository<Productimage>().Insert(productImage);
+                                await _unitOfWork.SaveChangesAsync();
+                            }
+                            else
+                            {
+                                _notifyService.Error("Đã xảy ra lỗi khi upload ảnh.");
+                            }
+                        }
+                    }
+                }
+
+                _notifyService.Success("Thêm thành công.");
+                return RedirectToAction(nameof(Index));
+
+            }
+
+            var errors = ModelState
+                   .Where(x => x.Value.Errors.Count > 0)
+                   .Select(x => new { x.Key, x.Value.Errors }).ToArray();
             _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
             return View(productCreateModel);
         }
@@ -185,73 +243,11 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit([FromForm] ProductCreateModel productCreateModel)
         {
-            if (!(productCreateModel.Productid is not null && ProductExists(productCreateModel.Productid)))
-            {
-                return NotFound();
-            }
-
-            //if (productCreateModel.ProductImageFile != null)
-            //{
-            //    var checkImageFile = FileValid.IsImageValid(productCreateModel.ProductImageFile);
-            //    if (!checkImageFile)
-            //    {
-            //        _notifyService.Error("Đã xảy ra lỗi. Định dạng ảnh không hợp lệ.");
-            //        return View(productCreateModel);
-            //    }
-
-            //    productCreateModel.Productimage = productCreateModel.ProductImageFile.FileName;
-            //}
-
-            if (ModelState.IsValid)
-            {
-                if (ProductNameExists(productCreateModel.Productname, productCreateModel.Productid))
-                {
-                    _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
-                    return View(productCreateModel);
-                }
-
-                var product = await _unitOfWork.GetRepository<Product>().FindAsync(productCreateModel.Productid);
-                if (product == null)
-                {
-                    return NotFound();
-                }
-
-                //var productImage = product.Productimage;
-                _mapper.Map(productCreateModel, product);
-                try
-                {
-                    //if (productCreateModel.ProductImageFile?.Length > 0)
-                    //{
-                    //    var upLoadImage = await _fileManagerService.UploadSingleImage(productCreateModel.ProductImageFile, GetPath.ProductImage);
-                    //    if (upLoadImage.Length > 0)
-                    //    {
-                    //        product.Productimage = upLoadImage;
-                    //        if(productImage != null && productImage != "")
-                    //        {
-                    //            _fileManagerService.DeleteSingleImage(GetPath.ProductImage + productImage);
-                    //        }
-                    //    }
-                    //    else
-                    //    {
-                    //        _notifyService.Error("Đã xảy ra lỗi khi upload ảnh.");
-                    //    }
-                    //}
-
-                    _unitOfWork.GetRepository<Product>().Update(product);
-                    await _unitOfWork.SaveChangesAsync();
-
-                    _notifyService.Success("Chỉnh sửa thành công.");
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception)
-                {
-                    _notifyService.Error("Đã xảy ra lỗi.");
-                    return RedirectToAction(nameof(Index));
-                }
-
-            }
-
-            _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
+            
+            var errors = ModelState
+                     .Where(x => x.Value.Errors.Count > 0)
+                     .Select(x => new { x.Key, x.Value.Errors }).ToArray();
+            _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại. " + errors);
             return View(productCreateModel);
         }
 

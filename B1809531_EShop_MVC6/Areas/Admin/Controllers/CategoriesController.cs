@@ -75,17 +75,16 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 }
 
             }
-
-            var category = _mapper.Map<Category>(categoryCreateModel);
-
+          
             if (ModelState.IsValid)
-            {
+            {                
                 if (CategoryNameExists(categoryCreateModel.Categoryname))
                 {
                     _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
                     return View(categoryCreateModel);
                 }
 
+                var category = _mapper.Map<Category>(categoryCreateModel);
                 if (categoryCreateModel.CategoryImageFile?.Length > 0)
                 {
                     var upLoadImage = await _fileManagerService.UploadSingleImage(categoryCreateModel.CategoryImageFile, GetPath.CategoryImage);
