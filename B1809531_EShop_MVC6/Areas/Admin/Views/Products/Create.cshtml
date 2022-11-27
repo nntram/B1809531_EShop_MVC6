@@ -84,12 +84,11 @@
                     </div>
 
                     <div class="form-group field" align="left">
-                        <label for="files" class="btn btn-outline-primary d-block w-50">
-                            <i class="fas fa-camera"></i>
-                            Chọn ảnh sản phẩm
+                       <label class="control-label">
+                            Chọn ảnh sản phẩm:
                         </label>
-                        <input type="file" id="files" name="ProductImageFile"
-                               class="input-file" multiple accept="image/*" />
+                        <input type="file" multiple class="multi with-preview" accept="image/*"
+                               asp-for="ProductImageFile" />
                     </div>
 
                     <div class="form-group">
@@ -113,9 +112,9 @@
         </div>
     </div>
 </div>
-@section Scripts{
-    <script src="~/admin_assets/js/upload-multiple.js"></script>
+@section Scripts{   
     <script src="~/admin_assets/js/price-display.js"></script>
     <script src="~/admin_assets/js/ckeditor.js"></script>
-    <script src="~/admin_assets/js/ckeditor-setup.js"></script>   
+    <script src="~/admin_assets/js/ckeditor-setup.js"></script>
+    <script src="~/admin_assets/js/jquery.MultiFile.js"></script>   
 }
