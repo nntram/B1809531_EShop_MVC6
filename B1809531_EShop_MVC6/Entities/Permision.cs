@@ -22,7 +22,7 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Permisionname { get; set; }
 
-        [InverseProperty(nameof(RolePermision.Permision))]
+        [InverseProperty("Permision")]
         public virtual ICollection<RolePermision> RolePermisions { get; set; }
     }
 }

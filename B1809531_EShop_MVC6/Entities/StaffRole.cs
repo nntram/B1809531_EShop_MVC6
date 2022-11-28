@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("STAFF_ROLE")]
-    [Index(nameof(Roleid), Name = "STAFF_ROLE2_FK")]
-    [Index(nameof(Staffid), Name = "STAFF_ROLE_FK")]
+    [Index("Roleid", Name = "STAFF_ROLE2_FK")]
+    [Index("Staffid", Name = "STAFF_ROLE_FK")]
     public partial class StaffRole
     {
         [Key]
@@ -23,11 +23,11 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(64)]
         public string? Staffroleid { get; set; }
 
-        [ForeignKey(nameof(Roleid))]
+        [ForeignKey("Roleid")]
         [InverseProperty("StaffRoles")]
         public virtual Role Role { get; set; } = null!;
-        [ForeignKey(nameof(Staffid))]
-        [InverseProperty(nameof(staff.StaffRoles))]
+        [ForeignKey("Staffid")]
+        [InverseProperty("StaffRoles")]
         public virtual staff Staff { get; set; } = null!;
     }
 }

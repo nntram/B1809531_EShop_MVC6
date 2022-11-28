@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("CARTITEM")]
-    [Index(nameof(Cartid), Name = "CARTITEM2_FK")]
-    [Index(nameof(Productid), Name = "CARTITEM_FK")]
+    [Index("Cartid", Name = "CARTITEM2_FK")]
+    [Index("Productid", Name = "CARTITEM_FK")]
     public partial class Cartitem
     {
         [Key]
@@ -27,10 +27,10 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("CARTITEMQUANTITY")]
         public int? Cartitemquantity { get; set; }
 
-        [ForeignKey(nameof(Cartid))]
+        [ForeignKey("Cartid")]
         [InverseProperty("Cartitems")]
         public virtual Cart Cart { get; set; } = null!;
-        [ForeignKey(nameof(Productid))]
+        [ForeignKey("Productid")]
         [InverseProperty("Cartitems")]
         public virtual Product Product { get; set; } = null!;
     }

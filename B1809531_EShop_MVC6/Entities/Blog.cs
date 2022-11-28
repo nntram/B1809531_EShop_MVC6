@@ -27,7 +27,7 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("BLOGCREATEDDATE")]
         public long? Blogcreateddate { get; set; }
 
-        [InverseProperty(nameof(Blogcomment.Blog))]
+        [InverseProperty("Blog")]
         public virtual ICollection<Blogcomment> Blogcomments { get; set; }
     }
 }

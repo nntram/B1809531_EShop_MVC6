@@ -23,5 +23,6 @@ namespace B1809531_EShop_MVC6.Models
         public ICollection<ProductImageModel> Productimages { get; set; }
         public BrandModel Brand { get; set; }
         public CategoryModel Category { get; set; }
+        public int Productcode { get; set; }
     }
 }

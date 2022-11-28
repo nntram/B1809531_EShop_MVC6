@@ -356,6 +356,9 @@ namespace B1809531_EShop_MVC6.Data
 
                 entity.Property(e => e.Productid).HasDefaultValueSql("(newid())");
 
+                entity.Property(e => e.Productcode).ValueGeneratedOnAdd()
+                .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore); ;
+
                 entity.Property(e => e.Productcreateddate).HasDefaultValueSql("(datediff_big(millisecond,'1970-01-01 00:00:00',getdate()))");
 
                 entity.Property(e => e.Productinacitve).HasDefaultValueSql("((1))");

@@ -1,0 +1,52 @@
+﻿@model B1809531_EShop_MVC6.Models.ProductImageCreateModel
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var product = ViewBag.Product as ProductModel;
+}
+
+
+<div class="row d-flex justify-content-center">
+    <div class="col-lg-8">
+        <!-- Default Card Example -->
+        <div class="card">
+            <div class="card-header py-3">
+                <h1 class="text-primary">Thêm mới</h1>
+                <h4 class="text-primary">Ảnh sản phẩm</h4>
+                <h6>Mã sản phẩm: @product.Productcode</h6>
+                <h6>Tên sản phẩm: @product.Productname</h6>
+            </div>
+
+            <div class="card-body">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                   
+                    <input asp-for="Productid" class="d-none" value="@product.Productid" />
+                    
+                    <div class="form-group field" align="left">
+                       <label class="control-label">
+                            Chọn ảnh sản phẩm:
+                        </label>
+                        <input type="file" multiple class="multi with-preview" accept="image/*"
+                               asp-for="ProductImageFile" />
+                    </div>
+                    
+                    <div class="form-group d-flex justify-content-center">
+                        <div>
+                            <input type="submit" value="Thêm" class="btn btn-primary" />
+                            <a asp-action="Index" asp-route-id="@product.Productid" class="btn btn-secondary">Trở lại</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script src="~/admin_assets/js/jquery.MultiFile.js"></script>
+}
+
+

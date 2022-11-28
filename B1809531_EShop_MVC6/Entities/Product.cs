@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("PRODUCT")]
-    [Index(nameof(Brandid), Name = "PRODUCT_BRAND_FK")]
-    [Index(nameof(Categoryid), Name = "PRODUCT_CATEGORY_FK")]
+    [Index("Brandid", Name = "PRODUCT_BRAND_FK")]
+    [Index("Categoryid", Name = "PRODUCT_CATEGORY_FK")]
     public partial class Product
     {
         public Product()
@@ -49,26 +49,28 @@ namespace B1809531_EShop_MVC6.Entities
         public int? Productsaleprice { get; set; }
         [Column("PRODUCTISHOT")]
         public bool? Productishot { get; set; }
+        [Column("PRODUCTCODE")]
+        public int Productcode { get; set; }
 
-        [ForeignKey(nameof(Brandid))]
+        [ForeignKey("Brandid")]
         [InverseProperty("Products")]
         public virtual Brand Brand { get; set; } = null!;
-        [ForeignKey(nameof(Categoryid))]
+        [ForeignKey("Categoryid")]
         [InverseProperty("Products")]
         public virtual Category Category { get; set; } = null!;
-        [InverseProperty(nameof(Cartitem.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Cartitem> Cartitems { get; set; }
-        [InverseProperty(nameof(Discount.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Discount> Discounts { get; set; }
-        [InverseProperty(nameof(Invoiceitem.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Invoiceitem> Invoiceitems { get; set; }
-        [InverseProperty(nameof(Orderitem.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Orderitem> Orderitems { get; set; }
-        [InverseProperty(nameof(Productimage.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Productimage> Productimages { get; set; }
-        [InverseProperty(nameof(Review.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Review> Reviews { get; set; }
-        [InverseProperty(nameof(Warehousereceiptitem.Product))]
+        [InverseProperty("Product")]
         public virtual ICollection<Warehousereceiptitem> Warehousereceiptitems { get; set; }
     }
 }

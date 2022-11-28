@@ -24,11 +24,11 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Paymenttypename { get; set; }
 
-        [InverseProperty(nameof(Invoice.Paymenttype))]
+        [InverseProperty("Paymenttype")]
         public virtual ICollection<Invoice> Invoices { get; set; }
-        [InverseProperty(nameof(Order.Paymenttype))]
+        [InverseProperty("Paymenttype")]
         public virtual ICollection<Order> Orders { get; set; }
-        [InverseProperty(nameof(Paymentdatum.Paymenttype))]
+        [InverseProperty("Paymenttype")]
         public virtual ICollection<Paymentdatum> Paymentdata { get; set; }
     }
 }

@@ -4,6 +4,9 @@
 <table class="table table-bordered table-hover dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
     <thead>
         <tr>
+            <th>
+                Mã sản phẩm
+            </th>
             <th class="col-sm-12 col-md-3">
                 Tên
             </th>
@@ -34,6 +37,9 @@
                 {
                     <tr>
                         <td>
+                            @Html.DisplayFor(modelItem => item.Productcode)
+                        </td>
+                        <td>
                             @Html.DisplayFor(modelItem => item.Productname)
                         </td>
                         <td>
@@ -57,8 +63,7 @@
 
                         <td class="right">
                             <a asp-action="Details" asp-route-id="@item.Productid" class="btn btn-info">Chi tiết</a>
-                            <a asp-action="Edit" asp-route-id="@item.Productid" class="btn btn-warning">Chỉnh sửa</a>
-                            <a asp-action="Delete" asp-route-id="@item.Productid" class="btn btn-danger">Xóa</a>
+                            <a asp-action="Edit" asp-route-id="@item.Productid" class="btn btn-warning">Chỉnh sửa</a>     
                         </td>
                     </tr>
                 }

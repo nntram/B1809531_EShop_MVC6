@@ -25,7 +25,7 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Shipmentstatusdescription { get; set; }
 
-        [InverseProperty(nameof(Order.Shipmentstatus))]
+        [InverseProperty("Shipmentstatus")]
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

@@ -34,7 +34,7 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("SUPPLIERCREACTEDDATE")]
         public long? Suppliercreacteddate { get; set; }
 
-        [InverseProperty(nameof(Warehousereceipt.Supplier))]
+        [InverseProperty("Supplier")]
         public virtual ICollection<Warehousereceipt> Warehousereceipts { get; set; }
     }
 }

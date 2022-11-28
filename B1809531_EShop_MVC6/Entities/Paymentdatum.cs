@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("PAYMENTDATA")]
-    [Index(nameof(Paymenttypeid), Name = "PAYMENTDATA_FK")]
+    [Index("Paymenttypeid", Name = "PAYMENTDATA_FK")]
     public partial class Paymentdatum
     {
         public Paymentdatum()
@@ -29,10 +29,10 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Paymentdatatype { get; set; }
 
-        [ForeignKey(nameof(Paymenttypeid))]
+        [ForeignKey("Paymenttypeid")]
         [InverseProperty("Paymentdata")]
         public virtual Paymenttype Paymenttype { get; set; } = null!;
-        [InverseProperty(nameof(Paymentdetail.Paymentdata))]
+        [InverseProperty("Paymentdata")]
         public virtual ICollection<Paymentdetail> Paymentdetails { get; set; }
     }
 }

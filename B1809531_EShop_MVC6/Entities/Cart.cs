@@ -20,9 +20,9 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(64)]
         public string Cartid { get; set; } = null!;
 
-        [InverseProperty(nameof(Cartitem.Cart))]
+        [InverseProperty("Cart")]
         public virtual ICollection<Cartitem> Cartitems { get; set; }
-        [InverseProperty(nameof(Customer.Cart))]
+        [InverseProperty("Cart")]
         public virtual ICollection<Customer> Customers { get; set; }
     }
 }

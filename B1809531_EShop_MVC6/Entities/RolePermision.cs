@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("ROLE_PERMISION")]
-    [Index(nameof(Permisionid), Name = "ROLE_PERMISION2_FK")]
-    [Index(nameof(Roleid), Name = "ROLE_PERMISION_FK")]
+    [Index("Permisionid", Name = "ROLE_PERMISION2_FK")]
+    [Index("Roleid", Name = "ROLE_PERMISION_FK")]
     public partial class RolePermision
     {
         [Key]
@@ -23,10 +23,10 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(64)]
         public string? Rolepermisionid { get; set; }
 
-        [ForeignKey(nameof(Permisionid))]
+        [ForeignKey("Permisionid")]
         [InverseProperty("RolePermisions")]
         public virtual Permision Permision { get; set; } = null!;
-        [ForeignKey(nameof(Roleid))]
+        [ForeignKey("Roleid")]
         [InverseProperty("RolePermisions")]
         public virtual Role Role { get; set; } = null!;
     }

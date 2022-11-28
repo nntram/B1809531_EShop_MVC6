@@ -1,0 +1,76 @@
+﻿@model IEnumerable<ProductImageModel>
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_AdminLayout.cshtml";
+    var product = ViewBag.Product as ProductModel;
+}
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <h5 class="font-weight-bold text-primary">Hình ảnh sản phẩm</h5>
+        <h6>Mã sản phẩm: @product.Productcode</h6>
+        <h6>Tên sản phẩm: @product.Productname</h6>
+    </div>
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                <div class="row pb-3">
+                    <div class="col-sm-12 col-md-6">
+                        <a asp-action="Create" asp-route-id="@product.Productid" class="btn btn-primary">Thêm mới</a>
+                        <a asp-controller="Products" asp-action="Edit" asp-route-id="@product.Productid" class="btn btn-warning">Trở lại</a>
+                    </div>
+                </div>
+
+                <div class="row d-flex justify-content-center">
+                    <div class="col-sm-6">
+                        <span class="text-warning"><b>Lưu ý:</b> Mỗi sản phẩm phải còn tối thiểu 1 ảnh.</span>
+                        <table class="table table-bordered table-hover dataTable" id="dataTable" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Hình ảnh
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="listContainer">
+                                    <partial name="_imgListPartial" model="Model"></partial>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            $.fn.DeleteAjax = function (id) {
+                var data = {
+                    id: id
+                }
+                $.ajax({
+                    url: "/Admin/Productimages/DeleteAjax",
+                    datatype: "json",
+                    type: "POST",
+                    async: true,
+                    data: data,
+                    success: function (results) {
+                        $("#listContainer").html("")
+                        $("#listContainer").html(results)
+                    },
+                    error: function (req, status, error) {
+                        alert(error);
+                    }
+                });
+            }
+            $('a[id^="aClick"]').click(function () {
+                $.fn.DeleteAjax(this.dataset.img)
+            })
+        });
+    </script>
+}

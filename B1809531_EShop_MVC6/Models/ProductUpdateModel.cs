@@ -3,8 +3,9 @@ using System.Configuration;
 
 namespace B1809531_EShop_MVC6.Models
 {
-    public class ProductCreateModel
+    public class ProductUpdateModel
     {
+
         [StringLength(64)]
         public string? Productid { get; set; }
         [StringLength(64)]
@@ -14,15 +15,13 @@ namespace B1809531_EShop_MVC6.Models
         [StringLength(256)]
         public string Productname { get; set; } = null!;
         public string Productdescribe { get; set; } = null!;
-        [IntegerValidator(MinValue = 0)]   
+        [IntegerValidator(MinValue = 0)]
         public int Productprice { get; set; }
         [IntegerValidator(MinValue = 0)]
         public int Productquantity { get; set; }
-        public long? Productcreateddate { get; set; }
-        public bool? Productinacitve { get; set; }
+        public bool Productinacitve { get; set; }
         [IntegerValidator(MinValue = 0)]
         public int Productsaleprice { get; set; }
-        public IFormFileCollection ProductImageFile { get; set; } = null!;
         public bool Productishot { get; set; } = false;
     }
 }

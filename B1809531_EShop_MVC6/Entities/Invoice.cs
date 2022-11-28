@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("INVOICE")]
-    [Index(nameof(Customerid), Name = "CUSTOMER_INVOICE_FK")]
-    [Index(nameof(Staffid), Name = "INVOICE_STAFF_FK")]
-    [Index(nameof(Wardid), Name = "INVOICE_WARD_FK")]
-    [Index(nameof(Orderid), Name = "ORDER_INVOICE2_FK")]
-    [Index(nameof(Paymenttypeid), Name = "PAYMENT_INVOICE_FK")]
+    [Index("Customerid", Name = "CUSTOMER_INVOICE_FK")]
+    [Index("Staffid", Name = "INVOICE_STAFF_FK")]
+    [Index("Wardid", Name = "INVOICE_WARD_FK")]
+    [Index("Orderid", Name = "ORDER_INVOICE2_FK")]
+    [Index("Paymenttypeid", Name = "PAYMENT_INVOICE_FK")]
     public partial class Invoice
     {
         public Invoice()
@@ -52,22 +52,22 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("INVOICEDISCOUNT")]
         public int? Invoicediscount { get; set; }
 
-        [ForeignKey(nameof(Customerid))]
+        [ForeignKey("Customerid")]
         [InverseProperty("Invoices")]
         public virtual Customer Customer { get; set; } = null!;
-        [ForeignKey(nameof(Orderid))]
+        [ForeignKey("Orderid")]
         [InverseProperty("Invoices")]
         public virtual Order Order { get; set; } = null!;
-        [ForeignKey(nameof(Paymenttypeid))]
+        [ForeignKey("Paymenttypeid")]
         [InverseProperty("Invoices")]
         public virtual Paymenttype Paymenttype { get; set; } = null!;
-        [ForeignKey(nameof(Staffid))]
-        [InverseProperty(nameof(staff.Invoices))]
+        [ForeignKey("Staffid")]
+        [InverseProperty("Invoices")]
         public virtual staff Staff { get; set; } = null!;
-        [ForeignKey(nameof(Wardid))]
+        [ForeignKey("Wardid")]
         [InverseProperty("Invoices")]
         public virtual Ward Ward { get; set; } = null!;
-        [InverseProperty(nameof(Invoiceitem.Invoice))]
+        [InverseProperty("Invoice")]
         public virtual ICollection<Invoiceitem> Invoiceitems { get; set; }
     }
 }

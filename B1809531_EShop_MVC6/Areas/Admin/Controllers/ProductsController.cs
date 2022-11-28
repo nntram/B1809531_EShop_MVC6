@@ -214,9 +214,9 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
 
             }
 
-            var errors = ModelState
-                   .Where(x => x.Value.Errors.Count > 0)
-                   .Select(x => new { x.Key, x.Value.Errors }).ToArray();
+            //var errors = ModelState
+            //       .Where(x => x.Value.Errors.Count > 0)
+            //       .Select(x => new { x.Key, x.Value.Errors }).ToArray();
             _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
             return View(productCreateModel);
         }
@@ -236,19 +236,52 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            return View(_mapper.Map<ProductCreateModel>(product));
+            var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(
+                       selector: s => new { s.Brandid, s.Brandname })).Items;
+            ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
+
+            var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(
+                        selector: s => new { s.Categoryid, s.Categoryname })).Items;
+            ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
+
+            return View(_mapper.Map<ProductUpdateModel>(product));
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromForm] ProductCreateModel productCreateModel)
-        {
-            
-            var errors = ModelState
-                     .Where(x => x.Value.Errors.Count > 0)
-                     .Select(x => new { x.Key, x.Value.Errors }).ToArray();
-            _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại. " + errors);
-            return View(productCreateModel);
+        public async Task<IActionResult> Edit([FromForm] ProductUpdateModel productUpdateModel)
+        {                              
+            var brands = (await _unitOfWork.GetRepository<Brand>().GetPagedListAsync(
+                       selector: s => new { s.Brandid, s.Brandname })).Items;
+            ViewBag.Brands = new SelectList(brands, "Brandid", "Brandname");
+
+            var catergories = (await _unitOfWork.GetRepository<Category>().GetPagedListAsync(
+                        selector: s => new { s.Categoryid, s.Categoryname })).Items;
+            ViewBag.Categories = new SelectList(catergories, "Categoryid", "Categoryname");
+
+            if (ModelState.IsValid)
+            {
+                if (ProductNameExists(productUpdateModel.Productname, productUpdateModel.Productid))
+                {
+                    _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
+                    return View(productUpdateModel);
+                }
+                var product = await _unitOfWork.GetRepository<Product>().FindAsync(productUpdateModel.Productid);
+                if(product == null)
+                {
+                    return NotFound();
+                }
+                _mapper.Map(productUpdateModel, product);
+                
+                _unitOfWork.GetRepository<Product>().Update(product);
+                await _unitOfWork.SaveChangesAsync();
+
+                _notifyService.Success("Chỉnh sửa thành công.");
+                return RedirectToAction("Details", "Products", new { id = product.Productid });
+            }
+
+            _notifyService.Error("Dữ liệu không hợp lệ, vui lòng kiểm tra lại.");
+            return View(productUpdateModel);
         }
 
         // GET: Admin/Products/Delete/5
@@ -314,5 +347,6 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                                predicate: n => (n.Productname.ToLower() == name.ToLower() && n.Productid != id));
             return product != null;
         }
+    
     }
 }
