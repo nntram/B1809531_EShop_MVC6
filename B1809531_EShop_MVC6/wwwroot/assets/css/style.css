@@ -33,7 +33,7 @@
 html,
 body {
     height: 100%;
-    font-family: "Cairo", sans-serif;
+    font-family: sans-serif;
     -webkit-font-smoothing: antialiased;
     font-smoothing: antialiased;
 }
@@ -47,7 +47,7 @@ h6 {
     margin: 0;
     color: #111111;
     font-weight: 400;
-    font-family: "Cairo", sans-serif;
+    font-family: sans-serif;
 }
 
 h1 {
@@ -76,7 +76,7 @@ h6 {
 
 p {
     font-size: 16px;
-    font-family: "Cairo", sans-serif;
+    font-family: sans-serif;
     color: #6f6f6f;
     font-weight: 400;
     line-height: 26px;
@@ -137,7 +137,7 @@ ol {
 .set-bg {
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: top center;
+    background-position: center;
 }
 
 .spad {
@@ -735,6 +735,7 @@ ol {
     display: flex;
     align-items: center;
     padding-left: 75px;
+    margin: 2em;
 }
 
 .hero__text span {
@@ -743,6 +744,11 @@ ol {
     font-weight: 700;
     letter-spacing: 4px;
     color: #7fad39;
+}
+
+.hero__text__container {
+    background-color: rgba(255, 255, 255, 0.4);
+    padding: 2em;
 }
 
 .hero__text h2 {
@@ -770,9 +776,7 @@ ol {
     position: relative;
 }
 
-    .categories__item h5 {
-        position: absolute;
-        left: 0;
+    .categories__item h5 {        
         width: 100%;
         padding: 0 20px;
         bottom: 20px;
@@ -782,8 +786,7 @@ ol {
         .categories__item h5 a {
             font-size: 18px;
             color: #1c1c1c;
-            font-weight: 700;
-            text-transform: uppercase;
+            font-weight: 700;            
             letter-spacing: 2px;
             padding: 12px 0 10px;
             background: #ffffff;
@@ -945,6 +948,10 @@ ol {
         .featured__item__text h6 a {
             color: #252525;
         }
+
+            .featured__item__text h6 a:hover {
+                font-weight: bold;
+            }
 
     .featured__item__text h5 {
         color: #252525;
@@ -3587,4 +3594,9 @@ ol {
     .blog__details__hero__text h2 {
         font-size: 24px;
     }
+}
+
+.img-150{
+    max-width: 150px;
+    margin: auto;
 }
