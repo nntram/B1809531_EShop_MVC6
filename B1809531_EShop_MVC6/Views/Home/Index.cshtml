@@ -15,7 +15,7 @@
             <span>Mỹ phẩm cao cấp</span>
             <h2>Đảm bảo sản phẩm<br> chính hãng</h2>
             <p>Miễn phí vận chuyển cho đơn hàng từ 250,000 VNĐ</p>
-            <a href="#" class="primary-btn">Mua ngay</a>
+            <a href="@Url.Action("GetProductList")" class="primary-btn">Mua ngay</a>
         </div>
     </div>
 </div>
@@ -37,14 +37,16 @@
                                 <div class="categories__item">
                                     <img src="/@(GetPath.CategoryImage+item.Categoryimage)"
                                  class="img-fluid img-thumbnail img-150" />
-                                    <h5><a href="#">@item.Categoryname</a></h5>
+                                    <h5>
+                                        <a href="@Url.Action("GetProductList", "Home", new {category = item.Categoryid})">
+                                            @item.Categoryname
+                                        </a>
+                                    </h5>
                                 </div>
                             </div>
                         }
                     }
                 }
-
-
             </div>
         </div>
     </div>
@@ -68,7 +70,11 @@
                                 <div class="categories__item">
                                     <img src="/@(GetPath.BrandImage+item.Brandimage)"
                                  class="img-fluid img-thumbnail img-150" />
-                                    <h5><a href="#">@item.Brandname</a></h5>
+                                    <h5>
+                                        <a href="@Url.Action("GetProductList", "Home", new {brand = item.Brandid})">
+                                            @item.Brandname
+                                        </a>
+                                    </h5>
                                 </div>
                             </div>
                         }
@@ -95,17 +101,15 @@
             @{
                 if (products != null && products.Count() > 0)
                 {
-                    var maxLength = products.Count() > 8 ? 8 : products.Count();
-                    for (int i = 0; i < maxLength; i++)
+                    foreach (var item in products)
                     {
-                        var item = products.ElementAt(i);
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="featured__item">
                                 <div class="featured__item__pic">
                                     <ul class="featured__item__pic__hover">
-                                        <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                        <li><a href="@Url.Action("GetProductDetails", "Home", new {id = item.Productid})"><i class="fa fa-shopping-cart"></i></a></li>
                                     </ul>
-                                    <img src="/@(GetPath.ProductImage+item.Productimages.FirstOrDefault().Productimageurl)"
+                                    <img src="/@(GetPath.ProductImage+item.Productimages.First().Productimageurl)"
                                  class="img-fluid" />
                                 </div>
 
@@ -113,21 +117,15 @@
                                     <h6 class="name-overflow">
                                         <i>
                                             <sub class="fa fa-heart-o text-danger"> Hot </sub>
-                                            <a href="#"> @item.Productname</a>
+                                            <a href="@Url.Action("GetProductDetails", "Home", new {id = item.Productid})"> @item.Productname</a>
                                         </i>
                                     </h6>
-                                    @{
-                                        if (item.Productsaleprice != item.Productprice)
-                                        {
-                                            <h5> @String.Format("{0:n0}", item.Productsaleprice) VNĐ</h5>
-                                            <h6> <s>@String.Format("{0:n0}", item.Productprice) VNĐ </s></h6>
-                                        }
-                                        else
-                                        {
-                                            <h5> @String.Format("{0:n0}", item.Productsaleprice) VNĐ</h5>
-                                        }
-                                    }
+                                    <h5> @String.Format("{0:n0}", item.Productsaleprice) VNĐ</h5>
 
+                                    @if (item.Productsaleprice != item.Productprice)
+                                    {
+                                        <h6> <s>@String.Format("{0:n0}", item.Productprice) VNĐ </s></h6>
+                                    }
                                 </div>
                             </div>
                         </div>

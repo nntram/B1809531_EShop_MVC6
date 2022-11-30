@@ -91,6 +91,25 @@
     <script>
         $(document).ready(function () {
 
+            const params = new Proxy(new URLSearchParams(window.location.search), {
+                get: (searchParams, prop) => searchParams.get(prop),
+            });
+            
+            let brand = params.brand; 
+            let category = params.category;
+
+            if(brand){
+                var brandid = "#brand-" + brand
+                $('.sidebar__item#brand ul li a').removeClass("active")
+                $(brandid).addClass("active")
+            }
+
+            if (category) {
+                var catid = "#cat-" + category
+                $('.sidebar__item#cat ul li a').removeClass("active")
+                $(catid).addClass("active")
+            }
+
             $.fn.filterFunction = function (data) {
                 $.ajax({
                     url: "/Home/GetOnePage",

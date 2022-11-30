@@ -1,0 +1,32 @@
+﻿@using B1809531_EShop_MVC6.Helpers;
+@model ProductModel
+
+<div class="product__item">
+    <div class="product__item__pic">
+        <img src="/@(GetPath.ProductImage+Model.Productimages.First().Productimageurl)"
+             class="img-fluid" />
+        <ul class="product__item__pic__hover">
+            <li>
+                <a href="@Url.Action("GetProductDetails", "Home", new {id = Model.Productid})">
+                    <i class="fa fa-shopping-cart"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="product__item__text">
+        <h6 class="name-overflow">
+            <i>
+                @if (Model.Productishot == true)
+                {
+                    <sub class="fa fa-heart-o text-danger"> Hot </sub>
+                }
+                <a href="@Url.Action("GetProductDetails", "Home", new {id = Model.Productid})"> @Model.Productname</a>
+            </i>
+        </h6>
+        <h5> @String.Format("{0:n0}", Model.Productsaleprice) VNĐ</h5>
+        @if (Model.Productsaleprice != Model.Productprice)
+        {
+            <h6> <s>@String.Format("{0:n0}", Model.Productprice) VNĐ </s></h6>
+        }
+    </div>
+</div>

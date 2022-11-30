@@ -34,7 +34,7 @@ namespace B1809531_EShop_MVC6.Controllers
             var products = (await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
                                 predicate: p => p.Productishot == true && p.Productinacitve == true,
                                 include: source => source.Include(m => m.Productimages),
-                                pageSize: int.MaxValue)).Items;
+                                pageSize: Const.ProductFeaturePageSize)).Items;
             ViewBag.Products = _mapper.Map<IEnumerable<ProductModel>>(products);
             return View();
         }
@@ -116,5 +116,36 @@ namespace B1809531_EShop_MVC6.Controllers
             return listPaged;
         }
 
+        public async Task<IActionResult> GetProductDetails(string id)
+        {
+            if (id == null || _unitOfWork.GetRepository<Product>() == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _unitOfWork.GetRepository<Product>()
+                .GetFirstOrDefaultAsync(include: source => source
+                .Include(m => m.Productimages)
+                .Include(m => m.Brand)
+                .Include(m => m.Category),
+                predicate: m => m.Productid == id && m.Productinacitve == true);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+            var relatedProduct =(await _unitOfWork.GetRepository<Product>().GetPagedListAsync(
+                                  predicate: p => p.Productinacitve == true && 
+                                                p.Categoryid == product.Categoryid &&
+                                                p.Productishot == true,
+                                  orderBy: p => p.OrderByDescending(
+                                                q => q.Productcreateddate),
+                                  include: p => p.Include(q => q.Productimages),
+                                  pageSize: Const.RelatedProductPageSize)).Items as IEnumerable<Product>;
+            
+            ViewBag.RelatedProduct = _mapper.Map<IEnumerable<ProductModel>>(relatedProduct);
+            return View(_mapper.Map<ProductModel>(product));
+
+        }
     }
 }
