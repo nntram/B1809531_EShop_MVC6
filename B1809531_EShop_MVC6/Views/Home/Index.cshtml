@@ -1,4 +1,5 @@
 ﻿@using B1809531_EShop_MVC6.Helpers;
+
 @{
     ViewData["Title"] = "Trang chủ";
     var categories = ViewBag.Categories as IEnumerable<CategoryModel>;
@@ -7,7 +8,8 @@
 }
 
 <div class="hero__item set-bg"
-     data-setbg="https://img.freepik.com/free-photo/different-makeup-cosmetics-brushes-white-background_23-2147878833.jpg?w=2000">
+     data-setbg="@GetPath.BannerImage/different-makeup-cosmetics-brushes-white-background_23-2147878833.webp
+">
     <div class="hero__text__container">
         <div class="hero__text">
             <span>Mỹ phẩm cao cấp</span>
@@ -34,7 +36,7 @@
                             <div class="col-lg-3">
                                 <div class="categories__item">
                                     <img src="/@(GetPath.CategoryImage+item.Categoryimage)"
-                                    class="img-fluid img-thumbnail img-150" />
+                                 class="img-fluid img-thumbnail img-150" />
                                     <h5><a href="#">@item.Categoryname</a></h5>
                                 </div>
                             </div>
@@ -79,39 +81,63 @@
     </div>
 </section>
 <!-- Categories Section End -->
-                                <section class="featured spad">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="section-title">
-                        <h2>Sản phẩm nổi bật</h2>
-                    </div>
-                    
+<section class="featured spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="section-title">
+                    <h2>Sản phẩm nổi bật</h2>
                 </div>
+
             </div>
-            <div class="row featured__filter" >
+        </div>
+        <div class="row featured__filter">
             @{
-                if(products != null && products.Count() > 0)
+                if (products != null && products.Count() > 0)
                 {
-                    foreach(var item in products)
+                    var maxLength = products.Count() > 8 ? 8 : products.Count();
+                    for (int i = 0; i < maxLength; i++)
                     {
+                        var item = products.ElementAt(i);
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="featured__item">
-                                <div class="featured__item__pic set-bg" 
-                                    data-setbg="/@(GetPath.ProductImage+item.Productimages.FirstOrDefault().Productimageurl)">
+                                <div class="featured__item__pic">
+                                    <ul class="featured__item__pic__hover">
+                                        <li><a href="#"><i class="fa fa-shopping-cart"></i></a></li>
+                                    </ul>
+                                    <img src="/@(GetPath.ProductImage+item.Productimages.FirstOrDefault().Productimageurl)"
+                                 class="img-fluid" />
                                 </div>
+
                                 <div class="featured__item__text">
-                                    <h6><a href="#">@item.Productname</a></h6>
-                                    <h5> @String.Format("{0:n0}", item.Productsaleprice) VNĐ</h5>
-                                    <h6> <s>@String.Format("{0:n0}", item.Productprice) VNĐ </s></h6>
+                                    <h6 class="name-overflow">
+                                        <i>
+                                            <sub class="fa fa-heart-o text-danger"> Hot </sub>
+                                            <a href="#"> @item.Productname</a>
+                                        </i>
+                                    </h6>
+                                    @{
+                                        if (item.Productsaleprice != item.Productprice)
+                                        {
+                                            <h5> @String.Format("{0:n0}", item.Productsaleprice) VNĐ</h5>
+                                            <h6> <s>@String.Format("{0:n0}", item.Productprice) VNĐ </s></h6>
+                                        }
+                                        else
+                                        {
+                                            <h5> @String.Format("{0:n0}", item.Productsaleprice) VNĐ</h5>
+                                        }
+                                    }
+
                                 </div>
                             </div>
                         </div>
                     }
-
                 }
             }
-                
-            </div>
         </div>
-    </section>
+    </div>
+</section>
+
+<div class="d-flex justify-content-center mb-4">
+    <a class="btn btn-outline-success" href="@Url.Action("GetProductList")">Xem tất cả sản phẩm</a>
+</div>

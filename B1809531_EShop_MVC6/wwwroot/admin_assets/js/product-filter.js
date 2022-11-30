@@ -51,7 +51,7 @@
         $.ajax({
             url: "/Admin/Products/GetOnePage",
             datatype: "json",
-            type: "POST",
+            type: "GET",
             data: data,
             async: true,
             success: function (results) {
@@ -86,7 +86,7 @@
         $.ajax({
             url: "/Admin/Products/GetOnePage",
             datatype: "json",
-            type: "POST",
+            type: "GET",
             data: data,
             async: true,
             success: function (results) {

@@ -1,0 +1,160 @@
+﻿@using X.PagedList;
+@model IPagedList<ProductModel>
+@{
+    ViewData["Title"] = "Sản phẩm";
+    SelectList brandList = ViewBag.Brands;
+    SelectList categoryList = ViewBag.Categories;
+}
+<section class="product spad">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-5">
+                <div class="sidebar">
+                    <div class="sidebar__item" id="cat">
+                        <h4>Loại sản phẩm</h4>
+                        <ul>
+                            <li><a class="active" id="cat-0" data-id="">Tất cả</a></li>
+                            @{
+                                if (categoryList != null && categoryList.Count() > 0)
+                                {
+                                    foreach (var item in categoryList)
+                                    {
+                                        <li>
+                                            <a id="cat-@item.Value" data-id="@item.Value">
+                                                @item.Text
+                                            </a>
+                                        </li>
+                                    }
+
+                                }
+                            }
+
+                        </ul>
+                    </div>
+                    <div class="sidebar__item" id="brand">
+                        <h4>Thương hiệu</h4>
+                        <ul>
+                            <li><a class="active" id="brand-0" data-id="">Tất cả</a></li>
+                            @{
+                                if (brandList != null && brandList.Count() > 0)
+                                {
+                                    foreach (var item in brandList)
+                                    {
+                                        <li>
+                                            <a id="brand-@item.Value" data-id="@item.Value">
+                                                @item.Text
+                                            </a>
+                                        </li>
+                                    }
+
+                                }
+                            }
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9 col-md-7">
+                <div class="section-title">
+                    <h2>Danh sách sản phẩm</h2>
+                </div>
+                <div class="filter__item">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-5">
+                            <div class="filter__sort">
+                                <span>Sắp xếp</span>
+
+                                <div class="nice-select" tabindex="0">
+                                    <span class="current">Mới nhất</span>
+                                    <ul class="list">
+                                        <li data-value="" class="option selected focus">Mới nhất</li>
+                                        <li data-value="price_asc" class="option ">Giá tăng dần</li>
+                                        <li data-value="price_desc" class="option">Giá giảm dần</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="_listContainer">
+
+                    <partial name="_productListPartial" model="Model" />
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+
+            $.fn.filterFunction = function (data) {
+                $.ajax({
+                    url: "/Home/GetOnePage",
+                    datatype: "json",
+                    type: "GET",
+                    data: data,
+                    async: true,
+                    success: function (results) {
+                        $("#_listContainer").html("")
+                        $("#_listContainer").html(results)
+
+                    },
+                    error: function (xhr) {
+                        alert('error')
+                    }
+                })
+            }
+
+            $('a[id^="cat-"]').click(function () {
+                var id = this.dataset.id
+                var itemid = "#" + this.id
+                $('.sidebar__item#cat ul li a').removeClass("active")
+                $(itemid).addClass("active")
+
+                var data = $.fn.getDataFilter()
+                $.fn.filterFunction(data)
+            })
+
+            $('a[id^="brand-"]').click(function () {
+                var id = this.dataset.id
+                var itemid = "#" + this.id
+                $('.sidebar__item#brand ul li a').removeClass("active")
+                $(itemid).addClass("active")
+
+                var data = $.fn.getDataFilter()
+                $.fn.filterFunction(data)
+
+            })
+
+            $.fn.getDataFilter = function () {
+                var brand = $('.sidebar__item#brand ul li a.active').data('id');
+                var cat = $('.sidebar__item#cat ul li a.active').data('id');
+                var order = $(".nice-select .option.selected").data('value');
+
+                var data = {
+                    brand: brand,
+                    category: cat,
+                    orderBy: order
+                }
+
+                return data;
+            }
+
+            $(".filter__sort .nice-select .option").click(function () {
+                var orderValue = this.dataset.value
+
+                var data = $.fn.getDataFilter()
+                //gán lại orderBy vì .option.selected thay đổi sau khi click
+                data.orderBy = orderValue
+
+                $.fn.filterFunction(data)
+            })
+
+
+        })
+    </script>
+ }                               

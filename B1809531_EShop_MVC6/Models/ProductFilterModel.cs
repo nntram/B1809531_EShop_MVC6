@@ -7,5 +7,7 @@
         public bool? isGetHot { get; set; } = false;
         public bool? isGetNotInActive { get; set; } = false;
         public bool? isGetOutOfStock { get; set; } = false;
+        public string? productName { get; set; }
+        public string? orderBy { get; set;}
     }
 }

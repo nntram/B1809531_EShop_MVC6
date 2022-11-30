@@ -10,9 +10,6 @@
     <title>Nari Cosmetic Shop | @ViewData["Title"]</title>
     <link rel="icon" href="~/assets/img/logo5.png">
 
-    <!-- Google Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200;300;400;600;900&display=swap" rel="stylesheet">
-
     <!-- Css Styles -->
     <link rel="stylesheet" href="~/assets/css/bootstrap.min.css" type="text/css">
     <link rel="stylesheet" href="~/assets/css/font-awesome.min.css" type="text/css">
@@ -22,6 +19,7 @@
     <link rel="stylesheet" href="~/assets/css/owl.carousel.min.css" type="text/css">
     <link rel="stylesheet" href="~/assets/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="~/assets/css/style.css" type="text/css">
+    <link rel="stylesheet" href="~/css/PagedList.css" type="text/css">
 </head>
 
 <body>
@@ -40,9 +38,9 @@
         <nav class="humberger__menu__nav mobile-menu">
             <ul>
                 <li @((ViewData["Title"].ToString() == "Trang chủ")? "class= active": "")><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                <li @((ViewData["Title"].ToString() == "Sản phẩm")? "class= active": "")><a asp-controller="Product" asp-action="Index">Sản phẩm</a></li>               
-                <li @((ViewData["Title"].ToString() == "Blog")? "class= active": "")><a asp-controller="Blog" asp-action="Index">Blog</a></li>
-                <li @((ViewData["Title"].ToString() == "Liên hệ")? "class= active": "")><a asp-controller="Contact" asp-action="Index">Liên hệ</a></li>
+                <li @((ViewData["Title"].ToString() == "Sản phẩm")? "class= active": "")><a asp-controller="Home" asp-action="GetProductList">Sản phẩm</a></li>               
+                <li @((ViewData["Title"].ToString() == "Blog")? "class= active": "")><a asp-controller="Home" asp-action="GetBlogList">Blog</a></li>
+                <li @((ViewData["Title"].ToString() == "Liên hệ")? "class= active": "")><a asp-controller="Home" asp-action="Contact">Liên hệ</a></li>
             </ul>
         </nav>
         <div id="mobile-menu-wrap"></div>
@@ -88,9 +86,9 @@
                     <nav class="header__menu">
                         <ul>
                             <li @((ViewData["Title"].ToString() == "Trang chủ")? "class= active": "")><a asp-controller="Home" asp-action="Index">Trang chủ</a></li>
-                            <li @((ViewData["Title"].ToString() == "Sản phẩm")? "class= active": "")><a asp-controller="Product" asp-action="Index">Sản phẩm</a></li>                           
-                            <li @((ViewData["Title"].ToString() == "Blog")? "class= active": "")><a asp-controller="Blog" asp-action="Index">Blog</a></li>
-                            <li @((ViewData["Title"].ToString() == "Liên hệ")? "class= active": "")><a asp-controller="Contact" asp-action="Index">Liên hệ</a></li>
+                            <li @((ViewData["Title"].ToString() == "Sản phẩm")? "class= active": "")><a asp-controller="Home" asp-action="GetProductList">Sản phẩm</a></li>
+                            <li @((ViewData["Title"].ToString() == "Blog")? "class= active": "")><a asp-controller="Home" asp-action="GetBlogList">Blog</a></li>
+                            <li @((ViewData["Title"].ToString() == "Liên hệ")? "class= active": "")><a asp-controller="Home" asp-action="Contact">Liên hệ</a></li>
                         </ul>
                     </nav>
                 </div>
@@ -201,7 +199,8 @@
     <script src="~/assets/js/mixitup.min.js"></script>
     <script src="~/assets/js/owl.carousel.min.js"></script>
     <script src="~/assets/js/main.js"></script>
-
+    <script src="~/lib/jquery.unobtrusive-ajax.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
 
 </body>
 

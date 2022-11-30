@@ -68,9 +68,11 @@
                     }
                 });
             }
-            $('a[id^="aClick"]').click(function () {
+
+             $(document).on("click", 'a[id^="aClick"]', function () {
                 $.fn.DeleteAjax(this.dataset.img)
             })
-        });
+
+        }) 
     </script>
 }
