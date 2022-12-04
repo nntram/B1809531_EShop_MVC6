@@ -7,24 +7,25 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("STAFF")]
-    [Index("Warehousereceiptid", Name = "STAFF_WAREHOUSERECEIPT_FK")]
+    [Index("Roleid", Name = "STAFF_ROLE_FK")]
     public partial class staff
     {
         public staff()
         {
             Invoices = new HashSet<Invoice>();
-            StaffRoles = new HashSet<StaffRole>();
+            Orders = new HashSet<Order>();
+            Warehousereceipts = new HashSet<Warehousereceipt>();
         }
 
         [Key]
         [Column("STAFFID")]
         [StringLength(64)]
         public string Staffid { get; set; } = null!;
-        [Column("WAREHOUSERECEIPTID")]
+        [Column("ROLEID")]
         [StringLength(64)]
-        public string? Warehousereceiptid { get; set; }
+        public string Roleid { get; set; } = null!;
         [Column("STAFFNAME")]
-        [StringLength(256)]
+        [StringLength(128)]
         public string? Staffname { get; set; }
         [Column("STAFFGENDER")]
         public int? Staffgender { get; set; }
@@ -36,22 +37,23 @@ namespace B1809531_EShop_MVC6.Entities
         public string? Staffemail { get; set; }
         [Column("STAFFCREAREDDATE")]
         public long? Staffcreareddate { get; set; }
-        [Column("STAFFUSERNAME")]
-        [StringLength(256)]
-        public string? Staffusername { get; set; }
+        [Column("STAFFLOGINNAME")]
+        [StringLength(128)]
+        public string? Staffloginname { get; set; }
         [Column("STAFFPASSWORD")]
         [StringLength(256)]
         public string? Staffpassword { get; set; }
-        [Column("STAFFIDENTIFICATION")]
-        [StringLength(16)]
-        public string? Staffidentification { get; set; }
+        [Column("STAFFINACTIVE")]
+        public bool? Staffinactive { get; set; }
 
-        [ForeignKey("Warehousereceiptid")]
+        [ForeignKey("Roleid")]
         [InverseProperty("staff")]
-        public virtual Warehousereceipt? Warehousereceipt { get; set; }
+        public virtual Role Role { get; set; } = null!;
         [InverseProperty("Staff")]
         public virtual ICollection<Invoice> Invoices { get; set; }
         [InverseProperty("Staff")]
-        public virtual ICollection<StaffRole> StaffRoles { get; set; }
+        public virtual ICollection<Order> Orders { get; set; }
+        [InverseProperty("Staff")]
+        public virtual ICollection<Warehousereceipt> Warehousereceipts { get; set; }
     }
 }

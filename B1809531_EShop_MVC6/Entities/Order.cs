@@ -7,43 +7,29 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("ORDER")]
-    [Index("Customerid", Name = "CUSTOMNER_ORDER_FK")]
-    [Index("Paymenttypeid", Name = "ORDER_PAYMENT_FK")]
-    [Index("Shipmentstatusid", Name = "ORDER_SHIPMENTSTATUS_FK")]
-    [Index("Shipmenttypeid", Name = "ORDER_SHIPMENTTYPE_FK")]
-    [Index("Voucherid", Name = "ORDER_VOUCHER_FK")]
-    [Index("Wardid", Name = "ORDER_WARD_FK")]
+    [Index("Customerid", Name = "CUSTOMER_ORDER_FK")]
+    [Index("Orderstatusid", Name = "ORDER_STATUS_FK")]
+    [Index("Staffid", Name = "STAFF_ORDER_FK")]
     public partial class Order
     {
         public Order()
         {
             Invoices = new HashSet<Invoice>();
-            Orderitems = new HashSet<Orderitem>();
-            Paymentdetails = new HashSet<Paymentdetail>();
+            Orderdetails = new HashSet<Orderdetail>();
         }
 
         [Key]
         [Column("ORDERID")]
         [StringLength(64)]
         public string Orderid { get; set; } = null!;
-        [Column("SHIPMENTTYPEID")]
+        [Column("STAFFID")]
         [StringLength(64)]
-        public string Shipmenttypeid { get; set; } = null!;
-        [Column("SHIPMENTSTATUSID")]
-        [StringLength(64)]
-        public string Shipmentstatusid { get; set; } = null!;
+        public string? Staffid { get; set; }
+        [Column("ORDERSTATUSID")]
+        public int Orderstatusid { get; set; }
         [Column("CUSTOMERID")]
         [StringLength(64)]
         public string Customerid { get; set; } = null!;
-        [Column("WARDID")]
-        [StringLength(64)]
-        public string Wardid { get; set; } = null!;
-        [Column("VOUCHERID")]
-        [StringLength(64)]
-        public string Voucherid { get; set; } = null!;
-        [Column("PAYMENTTYPEID")]
-        [StringLength(64)]
-        public string Paymenttypeid { get; set; } = null!;
         [Column("ORDERCREATEDDATE")]
         public long? Ordercreateddate { get; set; }
         [Column("ORDERTRACKINGCODE")]
@@ -58,26 +44,12 @@ namespace B1809531_EShop_MVC6.Entities
         [ForeignKey("Customerid")]
         [InverseProperty("Orders")]
         public virtual Customer Customer { get; set; } = null!;
-        [ForeignKey("Paymenttypeid")]
+        [ForeignKey("Staffid")]
         [InverseProperty("Orders")]
-        public virtual Paymenttype Paymenttype { get; set; } = null!;
-        [ForeignKey("Shipmentstatusid")]
-        [InverseProperty("Orders")]
-        public virtual Shipmentstatus Shipmentstatus { get; set; } = null!;
-        [ForeignKey("Shipmenttypeid")]
-        [InverseProperty("Orders")]
-        public virtual Shipmenttype Shipmenttype { get; set; } = null!;
-        [ForeignKey("Voucherid")]
-        [InverseProperty("Orders")]
-        public virtual Voucher Voucher { get; set; } = null!;
-        [ForeignKey("Wardid")]
-        [InverseProperty("Orders")]
-        public virtual Ward Ward { get; set; } = null!;
+        public virtual staff? Staff { get; set; }
         [InverseProperty("Order")]
         public virtual ICollection<Invoice> Invoices { get; set; }
         [InverseProperty("Order")]
-        public virtual ICollection<Orderitem> Orderitems { get; set; }
-        [InverseProperty("Order")]
-        public virtual ICollection<Paymentdetail> Paymentdetails { get; set; }
+        public virtual ICollection<Orderdetail> Orderdetails { get; set; }
     }
 }

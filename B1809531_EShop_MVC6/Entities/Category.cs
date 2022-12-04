@@ -11,7 +11,6 @@ namespace B1809531_EShop_MVC6.Entities
     {
         public Category()
         {
-            Categorydiscounts = new HashSet<Categorydiscount>();
             Products = new HashSet<Product>();
         }
 
@@ -28,8 +27,6 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Categoryimage { get; set; }
 
-        [InverseProperty("Category")]
-        public virtual ICollection<Categorydiscount> Categorydiscounts { get; set; }
         [InverseProperty("Category")]
         public virtual ICollection<Product> Products { get; set; }
     }

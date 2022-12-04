@@ -7,22 +7,28 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("CART")]
+    [Index("Customerid", Name = "CUSTOMER_CARD_FK")]
     public partial class Cart
     {
         public Cart()
         {
-            Cartitems = new HashSet<Cartitem>();
-            Customers = new HashSet<Customer>();
+            Cartdetails = new HashSet<Cartdetail>();
         }
 
         [Key]
         [Column("CARTID")]
         [StringLength(64)]
         public string Cartid { get; set; } = null!;
+        [Column("CUSTOMERID")]
+        [StringLength(64)]
+        public string? Customerid { get; set; }
+        [Column("CARTQUANTITY")]
+        public int? Cartquantity { get; set; }
 
+        [ForeignKey("Customerid")]
+        [InverseProperty("Carts")]
+        public virtual Customer? Customer { get; set; }
         [InverseProperty("Cart")]
-        public virtual ICollection<Cartitem> Cartitems { get; set; }
-        [InverseProperty("Cart")]
-        public virtual ICollection<Customer> Customers { get; set; }
+        public virtual ICollection<Cartdetail> Cartdetails { get; set; }
     }
 }

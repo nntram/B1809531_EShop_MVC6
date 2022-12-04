@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("SUPPLIER")]
+    [Index("Wardid", Name = "SUPLIER_WARD_FK")]
     public partial class Supplier
     {
         public Supplier()
@@ -18,6 +19,9 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("SUPPLIERID")]
         [StringLength(64)]
         public string Supplierid { get; set; } = null!;
+        [Column("WARDID")]
+        [StringLength(64)]
+        public string Wardid { get; set; } = null!;
         [Column("SUPPLIERNAME")]
         [StringLength(256)]
         public string? Suppliername { get; set; }
@@ -34,6 +38,9 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("SUPPLIERCREACTEDDATE")]
         public long? Suppliercreacteddate { get; set; }
 
+        [ForeignKey("Wardid")]
+        [InverseProperty("Suppliers")]
+        public virtual Ward Ward { get; set; } = null!;
         [InverseProperty("Supplier")]
         public virtual ICollection<Warehousereceipt> Warehousereceipts { get; set; }
     }

@@ -7,16 +7,14 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("CUSTOMER")]
-    [Index("Cartid", Name = "CUSTOMER_CART2_FK")]
     [Index("Wardid", Name = "CUSTOMER_WARD_FK")]
     public partial class Customer
     {
         public Customer()
         {
-            Blogcomments = new HashSet<Blogcomment>();
+            Carts = new HashSet<Cart>();
             Invoices = new HashSet<Invoice>();
             Orders = new HashSet<Order>();
-            Reviews = new HashSet<Review>();
         }
 
         [Key]
@@ -26,14 +24,11 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("WARDID")]
         [StringLength(64)]
         public string Wardid { get; set; } = null!;
-        [Column("CARTID")]
-        [StringLength(64)]
-        public string Cartid { get; set; } = null!;
         [Column("CUSTOMERNAME")]
-        [StringLength(256)]
+        [StringLength(128)]
         public string? Customername { get; set; }
         [Column("CUSTOMERGENDER")]
-        public int? Customergender { get; set; }
+        public bool? Customergender { get; set; }
         [Column("CUSTIOMERCREATEDDATE")]
         public long? Custiomercreateddate { get; set; }
         [Column("CUSTOMERPHONENUMBER")]
@@ -42,22 +37,32 @@ namespace B1809531_EShop_MVC6.Entities
         [Column("CUSTOMERADDRESS")]
         [StringLength(256)]
         public string? Customeraddress { get; set; }
-        [Column("CUSTOMERWARD")]
-        public int? Customerward { get; set; }
+        [Column("CUSTOMEREMAIL")]
+        [StringLength(128)]
+        public string? Customeremail { get; set; }
+        [Column("CUSTOMEREMAILCONFIRM")]
+        [StringLength(128)]
+        public string? Customeremailconfirm { get; set; }
+        [Column("CUSTOMERUSERNAME")]
+        [StringLength(128)]
+        public string? Customerusername { get; set; }
+        [Column("CUSTOMERPASSWORD")]
+        [StringLength(256)]
+        public string? Customerpassword { get; set; }
+        [Column("CUSTOMERAVATAR")]
+        [StringLength(256)]
+        public string? Customeravatar { get; set; }
+        [Column("CUSTOMERINACTIVE")]
+        public bool? Customerinactive { get; set; }
 
-        [ForeignKey("Cartid")]
-        [InverseProperty("Customers")]
-        public virtual Cart Cart { get; set; } = null!;
         [ForeignKey("Wardid")]
         [InverseProperty("Customers")]
         public virtual Ward Ward { get; set; } = null!;
         [InverseProperty("Customer")]
-        public virtual ICollection<Blogcomment> Blogcomments { get; set; }
+        public virtual ICollection<Cart> Carts { get; set; }
         [InverseProperty("Customer")]
         public virtual ICollection<Invoice> Invoices { get; set; }
         [InverseProperty("Customer")]
         public virtual ICollection<Order> Orders { get; set; }
-        [InverseProperty("Customer")]
-        public virtual ICollection<Review> Reviews { get; set; }
     }
 }

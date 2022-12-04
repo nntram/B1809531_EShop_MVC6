@@ -7,31 +7,35 @@ using Microsoft.EntityFrameworkCore;
 namespace B1809531_EShop_MVC6.Entities
 {
     [Table("WAREHOUSERECEIPT")]
-    [Index("Supplierid", Name = "WAREHOUSERECEIPT_SUPPLIER_FK")]
+    [Index("Staffid", Name = "STAFF_WRRECEIPT_FK")]
+    [Index("Supplierid", Name = "SUPPLIER_WAREHOUSE_FK")]
     public partial class Warehousereceipt
     {
         public Warehousereceipt()
         {
-            Warehousereceiptitems = new HashSet<Warehousereceiptitem>();
-            staff = new HashSet<staff>();
+            Warehousereceiptdetails = new HashSet<Warehousereceiptdetail>();
         }
 
         [Key]
         [Column("WAREHOUSERECEIPTID")]
         [StringLength(64)]
         public string Warehousereceiptid { get; set; } = null!;
+        [Column("STAFFID")]
+        [StringLength(64)]
+        public string? Staffid { get; set; }
         [Column("SUPPLIERID")]
         [StringLength(64)]
         public string Supplierid { get; set; } = null!;
         [Column("WAREHOUSERECEIPTCREATEDDATE")]
         public long? Warehousereceiptcreateddate { get; set; }
 
+        [ForeignKey("Staffid")]
+        [InverseProperty("Warehousereceipts")]
+        public virtual staff? Staff { get; set; }
         [ForeignKey("Supplierid")]
         [InverseProperty("Warehousereceipts")]
         public virtual Supplier Supplier { get; set; } = null!;
         [InverseProperty("Warehousereceipt")]
-        public virtual ICollection<Warehousereceiptitem> Warehousereceiptitems { get; set; }
-        [InverseProperty("Warehousereceipt")]
-        public virtual ICollection<staff> staff { get; set; }
+        public virtual ICollection<Warehousereceiptdetail> Warehousereceiptdetails { get; set; }
     }
 }

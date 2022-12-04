@@ -18,6 +18,7 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(64)]
         public string Productid { get; set; } = null!;
         [Column("PRODUCTIMAGEURL")]
+        [StringLength(1024)]
         public string? Productimageurl { get; set; }
 
         [ForeignKey("Productid")]

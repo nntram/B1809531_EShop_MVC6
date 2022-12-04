@@ -11,8 +11,7 @@ namespace B1809531_EShop_MVC6.Entities
     {
         public Role()
         {
-            RolePermisions = new HashSet<RolePermision>();
-            StaffRoles = new HashSet<StaffRole>();
+            staff = new HashSet<staff>();
         }
 
         [Key]
@@ -24,8 +23,6 @@ namespace B1809531_EShop_MVC6.Entities
         public string? Rolename { get; set; }
 
         [InverseProperty("Role")]
-        public virtual ICollection<RolePermision> RolePermisions { get; set; }
-        [InverseProperty("Role")]
-        public virtual ICollection<StaffRole> StaffRoles { get; set; }
+        public virtual ICollection<staff> staff { get; set; }
     }
 }

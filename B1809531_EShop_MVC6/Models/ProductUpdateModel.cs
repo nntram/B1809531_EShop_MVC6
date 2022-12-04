@@ -19,7 +19,7 @@ namespace B1809531_EShop_MVC6.Models
         public int Productprice { get; set; }
         [IntegerValidator(MinValue = 0)]
         public int Productquantity { get; set; }
-        public bool Productinacitve { get; set; }
+        public bool Productinacitve { get; set; } = true;
         [IntegerValidator(MinValue = 0)]
         public int Productsaleprice { get; set; }
         public bool Productishot { get; set; } = false;

@@ -17,16 +17,18 @@ builder.Services.AddControllersWithViews()
     {
         options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
         options.JsonSerializerOptions.WriteIndented = true;
-    }); 
+    });
+
+
 //Add noitify
 builder.Services.AddNotyf(config => { config.DurationInSeconds = 3; config.IsDismissable = true; config.Position = NotyfPosition.TopRight; });
 
 //Config database
-builder.Services.AddDbContext<naricosmeticContext>(
+builder.Services.AddDbContext<NIENLUANContext>(
                x => x.UseSqlServer(builder.Configuration.GetConnectionString("eshop")));
 
 //Add Unitofwork
-builder.Services.AddUnitOfWork<naricosmeticContext>();
+builder.Services.AddUnitOfWork<NIENLUANContext>();
 
 //Add Services
 builder.Services.AddTransient(typeof(IFileManagerServies), typeof(FileManagerServies));
@@ -45,7 +47,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -55,6 +57,5 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();
