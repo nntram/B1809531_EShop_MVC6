@@ -181,6 +181,13 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
                     return View(productCreateModel);
                 }
+                var brand = await _unitOfWork.GetRepository<Brand>().FindAsync(productCreateModel.Brandid);
+                var category = await _unitOfWork.GetRepository<Category>().FindAsync(productCreateModel.Categoryid);
+                
+                if (category == null || brand == null)
+                {
+                    return NotFound();
+                }
                 var product = _mapper.Map<Product>(productCreateModel);
                 product.Productid = Guid.NewGuid().ToString();
                 _unitOfWork.GetRepository<Product>().Insert(product);
@@ -266,8 +273,10 @@ namespace B1809531_EShop_MVC6.Areas.Admin.Controllers
                     _notifyService.Error("Đã xảy ra lỗi. Tên đã tồn tại.");
                     return View(productUpdateModel);
                 }
+                var brand = await _unitOfWork.GetRepository<Brand>().FindAsync(productUpdateModel.Brandid);
+                var category = await _unitOfWork.GetRepository<Category>().FindAsync(productUpdateModel.Categoryid);
                 var product = await _unitOfWork.GetRepository<Product>().FindAsync(productUpdateModel.Productid);
-                if(product == null)
+                if(product == null || category == null || brand == null)
                 {
                     return NotFound();
                 }

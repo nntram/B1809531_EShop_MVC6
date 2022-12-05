@@ -20,6 +20,13 @@ namespace B1809531_EShop_MVC6.Helpers
             CreateMap<Product, ProductUpdateModel>().ReverseMap();
             CreateMap<Product, ProductCreateModel>().ReverseMap();
             CreateMap<Productimage, ProductImageModel>().ReverseMap();
+
+            CreateMap<Province, ProvinceModel>().ReverseMap();
+            CreateMap<District, DistrictModel>().ReverseMap();
+            CreateMap<Ward, WardModel>().ReverseMap();
+
+            CreateMap<Customer, CustomerCreateModel>().ReverseMap();
+
         }
     }
 }

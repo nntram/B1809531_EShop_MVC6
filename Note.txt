@@ -19,3 +19,9 @@ builder.HasKey(p => new { p.BusinessDay, p.ClientId, p.Version });
 builder.Property(p => p.Id)
     .ValueGeneratedOnAdd()
     .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore); // <--
+
+site key
+6Ldd_lkjAAAAAAgrEDmAb_urlXGn1VSj6p8Ku8zS
+
+secretkey
+6Ldd_lkjAAAAAKP5fkz4iyqAbVm0w9uceLwgYto8

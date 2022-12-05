@@ -123,9 +123,16 @@ namespace B1809531_EShop_MVC6.Data
             modelBuilder.Entity<District>(entity =>
             {
                 entity.HasKey(e => e.Districtid)
+                    .HasName("PK_PROVINCE")
                     .IsClustered(false);
 
                 entity.Property(e => e.Districtid).HasDefaultValueSql("(newid())");
+
+                entity.HasOne(d => d.Province)
+                    .WithMany(p => p.Districts)
+                    .HasForeignKey(d => d.Provinceid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_PROVINCE_PROVINCE__DISTRICT");
             });
 
             modelBuilder.Entity<Invoice>(entity =>
@@ -217,8 +224,7 @@ namespace B1809531_EShop_MVC6.Data
 
                 entity.Property(e => e.Productid).HasDefaultValueSql("(newid())");
 
-                entity.Property(e => e.Productcode).ValueGeneratedOnAdd()
-                                                   .Metadata.SetAfterSaveBehavior(PropertySaveBehavior.Ignore);
+                entity.Property(e => e.Productcode).ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Productcreateddate).HasDefaultValueSql("(datediff_big(millisecond,'1970-01-01 00:00:00',getdate()))");
 
@@ -252,15 +258,10 @@ namespace B1809531_EShop_MVC6.Data
             modelBuilder.Entity<Province>(entity =>
             {
                 entity.HasKey(e => e.Provinceid)
+                    .HasName("PK_DISTRICT")
                     .IsClustered(false);
 
                 entity.Property(e => e.Provinceid).HasDefaultValueSql("(newid())");
-
-                entity.HasOne(d => d.District)
-                    .WithMany(p => p.Provinces)
-                    .HasForeignKey(d => d.Districtid)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PROVINCE_PROVINCE__DISTRICT");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -296,11 +297,11 @@ namespace B1809531_EShop_MVC6.Data
 
                 entity.Property(e => e.Wardid).HasDefaultValueSql("(newid())");
 
-                entity.HasOne(d => d.Province)
+                entity.HasOne(d => d.District)
                     .WithMany(p => p.Wards)
-                    .HasForeignKey(d => d.Provinceid)
+                    .HasForeignKey(d => d.Districtid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_WARD_WARD_PROV_PROVINCE");
+                    .HasConstraintName("FK_WARD_WARD_PROV_DISTRICT");
             });
 
             modelBuilder.Entity<Warehousereceipt>(entity =>

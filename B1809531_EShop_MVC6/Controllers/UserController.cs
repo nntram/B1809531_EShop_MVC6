@@ -1,49 +1,154 @@
-﻿using AspNetCoreHero.ToastNotification.Abstractions;
+﻿using Arch.EntityFrameworkCore.UnitOfWork;
+using AspNetCoreHero.ToastNotification.Abstractions;
 using AspNetCoreHero.ToastNotification.Notyf;
+using B1809531_EShop_MVC6.Entities;
+using B1809531_EShop_MVC6.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
-using System.Text;
+using BC = BCrypt.Net.BCrypt;
+using System.Security.Claims;
+using reCAPTCHA.AspNetCore.Attributes;
+using AutoMapper;
 
 namespace B1809531_EShop_MVC6.Controllers
 {
-    public class UserController : Controller
-    {
-		private readonly IConfiguration _config;
+	public class UserController : Controller
+	{
+		private readonly IUnitOfWork _unitOfWork;
 		public readonly INotyfService _notifyService;
-
-		public UserController(IConfiguration config, INotyfService notifyService)
+		public readonly IMapper _mapper;
+		public UserController(IUnitOfWork unitOfWork, INotyfService notifyService, IMapper mapper)
 		{
-			_config = config;
+			_unitOfWork = unitOfWork;
 			_notifyService = notifyService;
+			_mapper = mapper;
 		}
 		public IActionResult Login()
 		{
 			return View();
 		}
 
-		[HttpPost] 
-		public IActionResult Login(string username, string password)
-        {
-			if ((username != "secret") || (password != "secret"))
+		[HttpPost]
+		public async Task<IActionResult> Login([FromForm]LoginModel loginModel)
+		{
+			if (!ModelState.IsValid)
 			{
-				_notifyService.Error("Login failed.");
-				return View((object)"Login Failed");
+				return View(loginModel);
 			}
-				
-			
+			var user = await _unitOfWork.GetRepository<Customer>().GetFirstOrDefaultAsync(
+								predicate: u => u.Customerusername == loginModel.username);
+			if (user != null && BC.Verify(loginModel.password, user.Customerpassword))
+			{
+				List<Claim> claims = new List<Claim>
+					{
+						new Claim(ClaimTypes.NameIdentifier, user.Customerid),
+						new Claim(ClaimTypes.Name, user.Customername),
+						new Claim(ClaimTypes.Role, "Customer"),						
+					};
 
-			return RedirectToAction("Log");
+				// create identity
+				ClaimsIdentity identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+				// create principal
+				ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
+				// sign-in
+				await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+						principal: principal,
+						properties: new AuthenticationProperties
+						{ 
+							AllowRefresh = true,
+							IsPersistent = loginModel.remember, // for 'remember me' feature
+						});
+				return RedirectToAction(nameof(HomeController.Index), "Home");
+			}
+			else if (user != null && user.Customerinactive == false)
+			{
+				ModelState.AddModelError("", "Tài khoản đã bị vô hiệu.");
+			}
+			else
+			{
+				ModelState.AddModelError("", "Sai tên đăng nhập hoặc mật khẩu.");
+			}
+			return View();
+		}
+
+		public async Task<IActionResult> Logout()
+		{
+			// Clear the existing external cookie
+			await HttpContext.SignOutAsync(
+				CookieAuthenticationDefaults.AuthenticationScheme);
+
+			return RedirectToAction(nameof(HomeController.Index), "Home");
 		}
 		[HttpGet]
-		[Authorize]
+		[Authorize(Roles = "Customer")]
 		public string GetData()
 		{
 			return "Hello you can access it.";
 		}
-	
-	}
+
+		public IActionResult Forbidden()
+		{
+			return View();
+		}
+        
+        public IActionResult Register()
+        {
+            return View();
+        }
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+        [ValidateRecaptcha]
+        public async Task<IActionResult> Register([FromForm] CustomerCreateModel model)
+        {
+			var checkModel = true;
+			if(!ModelState.IsValid)
+			{
+                ModelState.AddModelError("", "Dữ liệu không hợp lệ.");
+				checkModel = false;
+			}
+
+			var checkUserName = _unitOfWork.GetRepository<Customer>()
+								.GetFirstOrDefault(predicate: p => p.Customerusername == model.Customerusername);
+			if (checkUserName != null) {
+                ModelState.AddModelError("Customerusername", "Tên đăng nhập đã tồn tại.");
+				checkModel = false;
+			}
+            var checkEmail = await _unitOfWork.GetRepository<Customer>()
+                                .GetFirstOrDefaultAsync(predicate: p => p.Customeremail == model.Customeremail);
+            if (checkEmail != null)
+            {
+                ModelState.AddModelError("Customeremail", "Email đã được đăng ký.");
+				checkModel = false;
+			}
+			if (model.Customerpassword != model.Customerpassword)
+			{
+				ModelState.AddModelError("Customeremail", "Mật khẩu không khớp.");
+				checkModel = false;
+			}
+			if (!checkModel)
+			{
+				return View(model);
+			}
+
+			var checkWard = await _unitOfWork.GetRepository<Ward>()
+								.GetFirstOrDefaultAsync(predicate: p => p.Wardid == model.Wardid);
+			if (checkWard == null)
+			{
+				return NotFound();
+            }
+
+			var customer = _mapper.Map<Customer>(model);
+			customer.Customerpassword = BC.HashPassword(model.Customerpassword);
+			customer.Customerinactive = true;
+            _unitOfWork.GetRepository<Customer>().Insert(customer);
+            await _unitOfWork.SaveChangesAsync();
+			_notifyService.Success("Đăng ký thành công. Đăng nhập để tiếp tục.");
+			return RedirectToAction("Login");
+        }
+    }
 }

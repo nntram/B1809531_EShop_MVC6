@@ -1,0 +1,223 @@
+﻿@using Microsoft.Extensions.Options;
+@using reCAPTCHA.AspNetCore;
+@using reCAPTCHA.AspNetCore.Versions;
+@model B1809531_EShop_MVC6.Models.CustomerCreateModel
+
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+    Layout = null;
+    @inject IOptions<RecaptchaSettings> RecaptchaSettings
+}
+
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Nari Cosmetic Shop | @ViewData["Title"]</title>
+    <link rel="icon" href="~/assets/img/logo5.png">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="~/assets/css/font-awesome.min.css">
+
+    <link rel="stylesheet" href="~/login-form-15/css/style.css">
+   
+</head>
+<body>
+    <section class="ftco-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-12 col-lg-6">
+                    <div class="wrap">
+                        <div class="img" style="background-image: url(/login-form-15/images/bg-1.jpg);"></div>
+                        <div class="login-wrap p-4 p-md-5">
+                            <div class="d-flex">
+                                <div class="w-100">
+                                    <h3 class="mb-4">Đăng ký tài khoản khách hàng</h3>
+                                </div>
+
+                            </div>
+                            <form asp-action="Register" class="signin-form" method="post">
+                                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Họ tên:</label>
+                                    <input asp-for="Customername" class="form-control" />
+                                    <span asp-validation-for="Customername" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label"> Giới tính: </label>
+                                    <input type="radio" asp-for="Customergender"
+                                           value="true" checked> Nam
+                                    <input type="radio" asp-for="Customergender"
+                                           value="false"> Nữ
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Số điện thoại:</label>
+                                    <input asp-for="Customerphonenumber" class="form-control" />
+                                    <span asp-validation-for="Customerphonenumber" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Email:</label>
+                                    <input asp-for="Customeremail" class="form-control" type="email" />
+                                    <span asp-validation-for="Customeremail" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Tỉnh, thành:</label>
+                                    <select class="form-control" id="city" name="Provinceid" required>
+                                        <option value="" selected>Chọn tỉnh thành</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Quận, huyện:</label>
+                                    <select class="form-control" id="district" name="Districtid" required>
+                                        <option value="" selected>Chọn quận huyện</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Phường, xã:</label>
+                                    <select class="form-control" id="ward" name="Wardid" required>
+                                        <option value="" selected>Chọn phường xã</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Số nhà, tên đường:</label>
+                                    <input asp-for="Customeraddress" class="form-control" />
+                                    <span asp-validation-for="Customeraddress" class="text-danger"></span>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label">Tên đăng nhập:</label>
+                                    <input asp-for="Customerusername" class="form-control" />
+                                    <span asp-validation-for="Customerusername" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Mật khẩu:</label>
+                                    <input asp-for="Customerpassword" class="form-control" type="password" />
+                                    <span asp-validation-for="Customerpassword" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label">Xác nhận mật khẩu:</label>
+                                    <input asp-for="CustomerpasswordConfirm" class="form-control" type="password" />
+                                    <span asp-validation-for="CustomerpasswordConfirm" class="text-danger" id="span-confirm-password"></span>
+                                </div>
+                                
+                                <div class="form-group mb-4">
+                                    @(Html.Recaptcha<RecaptchaV2Checkbox>(RecaptchaSettings?.Value,
+                                        new RecaptchaV2Checkbox { SuccessCallback = "successCallback"
+                                        
+                                    }))
+
+                                </div>
+
+                                <div class="form-group text-center">
+                                    <input type="submit" value="Tạo tài khoản" class="btn btn-success" id="submitBtn" disabled />
+                                    <a asp-controller="Home" asp-action="Index" class="btn btn-light">Trở lại</a>
+                                </div>
+
+
+                            </form>
+                            <p class="text-center">Đã có tài khoản? <a asp-action="Login">Đăng nhập</a></p>
+                            <p class="text-center"> <a asp-controller="Home" asp-action="Index">Trở lại trang chủ</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/login-form-15/js/jquery.min.js"></script>
+    <script src="~/login-form-15/js/popper.js"></script>
+    <script src="~/login-form-15/js/bootstrap.min.js"></script>
+    <script src="~/login-form-15/js/main.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.21.1/axios.min.js"></script>
+    <script>
+
+        var citis = document.getElementById("city");
+        var districts = document.getElementById("district");
+        var wards = document.getElementById("ward");
+
+        var Parameter = {
+            url: "/Address/GetProvince",
+            method: "GET",
+            responseType: "application/json",
+        };
+        var promise = axios(Parameter);
+        promise.then(function (result) {
+            renderCity(result.data);
+        });
+
+        function renderCity(data) {
+            for (const x of data) {
+                citis.options[citis.options.length] = new Option(x.provincename, x.provinceid);
+            }
+        }
+        citis.onchange = function () {
+            district.length = 1;
+            ward.length = 1;
+            if (this.value != "") {
+                var districtList = [];
+                var Parameter2 = {
+                    url: "/Address/GetDistrict?provinceId=" + this.value,
+                    method: "GET",
+                    responseType: "application/json",
+                };
+                var promise2 = axios(Parameter2);
+                promise2.then(function (result) {
+                    districtList = result.data;
+                    for (const k of districtList) {
+                        district.options[district.options.length] = new Option(k.districtname, k.districtid);
+                    }
+                });
+            }
+        };
+        district.onchange = function () {
+            ward.length = 1;
+            if (this.value != "") {
+                let wardList;
+                var Parameter3 = {
+                    url: "/Address/GetWard?districtId=" + this.value,
+                    method: "GET",
+                    responseType: "application/json",
+                };
+                var promise3 = axios(Parameter3);
+                promise3.then(function (result) {
+                    wardList = result.data;
+                    for (const w of wardList) {
+                        wards.options[wards.options.length] = new Option(w.wardname, w.wardid);
+                    }
+                });
+            }
+        };
+
+        var password = document.getElementById("Customerpassword"),
+            confirm_password = document.getElementById("CustomerpasswordConfirm"),
+            span_error = document.getElementById("span-confirm-password");
+
+        function validatePassword() {
+            if (password.value != confirm_password.value) {
+                confirm_password.setCustomValidity("Passwords Don't Match");
+                span_error.innerHTML = "Passwords Don't Match";
+            } else {
+                confirm_password.setCustomValidity('');
+                span_error.innerHTML = "";
+            }
+        }
+
+        password.onckeyup = validatePassword;
+        confirm_password.onkeyup = validatePassword;
+
+        function successCallback(){          
+            $('#submitBtn').removeAttr('disabled');
+        }
+
+        function errorCallback() {
+            $('#submitBtn').setAttr('disabled');
+        }
+    </script>
+
+</body>
+</html>

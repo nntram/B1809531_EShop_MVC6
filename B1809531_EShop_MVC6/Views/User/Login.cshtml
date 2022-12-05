@@ -1,4 +1,5 @@
-﻿@{
+﻿@model LoginModel
+@{
 	Layout = null;
 	ViewData["Title"] = "Đăng nhập";
 }
@@ -34,13 +35,15 @@
 									</p>
 								</div>
 							</div>
+
 							<form action="Login" class="signin-form" method="post">
+								<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 								<div class="form-group mt-3">
-									<input type="text" class="form-control" name= "username" required>
+									<input type="text" class="form-control" asp-for = "username" required>
 									<label class="form-control-placeholder" for="username">Tên đăng nhập</label>
 								</div>
 								<div class="form-group">
-									<input id="password-field" type="password" class="form-control" name= "password" required>
+									<input id="password-field" type="password" class="form-control" asp-for="password" required>
 									<label class="form-control-placeholder" for="password">Mật khẩu</label>
 									<span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
 								</div>
@@ -51,7 +54,7 @@
 									<div class="w-50 text-left">
 										<label class="checkbox-wrap checkbox-primary mb-0">
 											Nhớ mật khẩu
-											<input type="checkbox" checked>
+											<input type="checkbox" checked asp-for="remember">
 											<span class="checkmark"></span>
 										</label>
 									</div>
@@ -60,7 +63,8 @@
 									</div>
 								</div>
 							</form>
-							<p class="text-center">Chưa phải là thành viên? <a data-toggle="tab" href="#signup">Đăng ký</a></p>
+							<p class="text-center">Chưa phải là thành viên? <a asp-action="Register">Đăng ký</a></p>
+							<p class="text-center"> <a asp-controller="Home" asp-action="Index">Trở lại trang chủ</a></p>
 						</div>
 					</div>
 				</div>
@@ -72,7 +76,7 @@
 	<script src="~/login-form-15/js/popper.js"></script>
 	<script src="~/login-form-15/js/bootstrap.min.js"></script>
 	<script src="~/login-form-15/js/main.js"></script>
-
+	@await Component.InvokeAsync("Notyf")
 </body>
 </html>
 

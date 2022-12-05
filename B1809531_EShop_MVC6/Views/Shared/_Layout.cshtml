@@ -20,6 +20,8 @@
     <link rel="stylesheet" href="~/assets/css/slicknav.min.css" type="text/css">
     <link rel="stylesheet" href="~/assets/css/style.css" type="text/css">
     <link rel="stylesheet" href="~/css/PagedList.css" type="text/css">
+    @await RenderSectionAsync("Header", required: false)
+
 </head>
 
 <body>
@@ -63,13 +65,30 @@
                     </div>
                     <div class="col-lg-6">
                         <div class="header__top__right">
-                            <div class="header__top__right__social">
-                                 <a href="#"><i class="fa fa-user"></i> Login</a>
-                            </div>
-                           
-                            <div class="header__top__right__auth">
-                                <a href="#"><i class="fa fa-user"></i> Login</a>
-                            </div>
+                            @{
+                                if (User.Identity.IsAuthenticated)
+                                {
+                                    <div class="header__top__right__social">
+                                        <a asp-controller="User" asp-action="Login"><i class="fa fa-user"></i> @User.Identity.Name</a>
+                                    </div>
+
+                                    <div class="header__top__right__auth">
+                                        <a asp-controller="User" asp-action="Logout"><i class="fa fa-arrow-circle-right"></i>Đăng xuất</a>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="header__top__right__social">
+                                        <a asp-controller="User" asp-action="Login"><i class="fa fa-arrow-circle-right"></i> Đăng nhập</a>
+                                    </div>
+
+                                    <div class="header__top__right__auth">
+                                        <a asp-controller="User" asp-action="Register"><i class="fa fa-user"></i>Đăng ký tài khoản</a>
+                                    </div>
+                                }
+
+                            }
+                            
                         </div>
                     </div>
                 </div>
