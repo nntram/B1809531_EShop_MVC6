@@ -27,6 +27,9 @@ namespace B1809531_EShop_MVC6.Helpers
 
             CreateMap<Customer, CustomerCreateModel>().ReverseMap();
 
+            CreateMap<Cart, CartModel>().ReverseMap();
+            CreateMap<Cartdetail, CartDetailModel>().ReverseMap();
+
         }
     }
 }

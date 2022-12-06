@@ -5,8 +5,6 @@ using B1809531_EShop_MVC6.Entities;
 using B1809531_EShop_MVC6.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using BC = BCrypt.Net.BCrypt;
 using System.Security.Claims;
@@ -42,11 +40,16 @@ namespace B1809531_EShop_MVC6.Controllers
 								predicate: u => u.Customerusername == loginModel.username);
 			if (user != null && BC.Verify(loginModel.password, user.Customerpassword))
 			{
-				List<Claim> claims = new List<Claim>
+				var getCart = await _unitOfWork.GetRepository<Cart>().GetFirstOrDefaultAsync(
+									predicate: prop => prop.Customerid == user.Customerid);
+				var cartQuantity = getCart.Cartquantity;
+
+                List<Claim> claims = new List<Claim>
 					{
 						new Claim(ClaimTypes.NameIdentifier, user.Customerid),
 						new Claim(ClaimTypes.Name, user.Customername),
-						new Claim(ClaimTypes.Role, "Customer"),						
+						new Claim(ClaimTypes.Role, "Customer"),
+						new Claim("CartQuantity", cartQuantity.ToString()),
 					};
 
 				// create identity
@@ -84,12 +87,7 @@ namespace B1809531_EShop_MVC6.Controllers
 
 			return RedirectToAction(nameof(HomeController.Index), "Home");
 		}
-		[HttpGet]
-		[Authorize(Roles = "Customer")]
-		public string GetData()
-		{
-			return "Hello you can access it.";
-		}
+		
 
 		public IActionResult Forbidden()
 		{
@@ -145,7 +143,14 @@ namespace B1809531_EShop_MVC6.Controllers
 			var customer = _mapper.Map<Customer>(model);
 			customer.Customerpassword = BC.HashPassword(model.Customerpassword);
 			customer.Customerinactive = true;
+			customer.Customerid = Guid.NewGuid().ToString();	
+
+			var cart = new Cart();
+			cart.Customerid = customer.Customerid;
+			cart.Cartquantity = 0;
+
             _unitOfWork.GetRepository<Customer>().Insert(customer);
+			_unitOfWork.GetRepository<Cart>().Insert(cart);
             await _unitOfWork.SaveChangesAsync();
 			_notifyService.Success("Đăng ký thành công. Đăng nhập để tiếp tục.");
 			return RedirectToAction("Login");
