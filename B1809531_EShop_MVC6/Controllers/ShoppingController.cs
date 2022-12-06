@@ -31,7 +31,7 @@ namespace B1809531_EShop_MVC6.Controllers
                         include: p => p.Include(n => n.Cartdetails));
             return cart;
         }
-		public async Task<IActionResult> GetCart()
+		public IActionResult GetCart()
 		{         
 			return View();
 		}
@@ -78,5 +78,89 @@ namespace B1809531_EShop_MVC6.Controllers
 
             return Json(new { success = true });
         }
-	}
+
+        public async Task<IActionResult> AddOne(string cartDetailtId)
+		{
+			var cartDetail = await _unitOfWork.GetRepository<Cartdetail>().FindAsync(cartDetailtId);
+
+			if (cartDetail == null)
+			{
+				return NoContent() ;
+			}
+
+			var product = await _unitOfWork.GetRepository<Product>().GetFirstOrDefaultAsync(
+					predicate: p => (p.Productinacitve == true && p.Productid == cartDetail.Productid));
+			var cart = await _unitOfWork.GetRepository<Cart>().FindAsync(cartDetail.Cartid);
+
+			if (product == null || cart == null)
+			{
+				return NoContent() ;
+			}
+
+			if(cartDetail.Cartdetailquantity + 1 > product.Productquantity)
+			{
+                return NoContent();
+            }
+
+			cartDetail.Cartdetailquantity++;
+			_unitOfWork.GetRepository<Cartdetail>().Update(cartDetail);
+			cart.Cartquantity++;
+			_unitOfWork.GetRepository<Cart>().Update(cart);
+			await _unitOfWork.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+
+        public async Task<IActionResult> MinusOne(string cartDetailtId)
+        {
+            var cartDetail = await _unitOfWork.GetRepository<Cartdetail>().FindAsync(cartDetailtId);
+
+            if (cartDetail == null)
+            {
+                return NoContent();
+            }
+
+            var product = await _unitOfWork.GetRepository<Product>().GetFirstOrDefaultAsync(
+                    predicate: p => (p.Productinacitve == true && p.Productid == cartDetail.Productid));
+            var cart = await _unitOfWork.GetRepository<Cart>().FindAsync(cartDetail.Cartid);
+
+            if (product == null || cart == null || cartDetail.Cartdetailquantity < 2)
+            {
+                return NoContent();
+            }
+      
+            cartDetail.Cartdetailquantity--;
+            _unitOfWork.GetRepository<Cartdetail>().Update(cartDetail);
+            cart.Cartquantity--;
+            _unitOfWork.GetRepository<Cart>().Update(cart);
+            await _unitOfWork.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+
+        public async Task<IActionResult> Remove(string cartDetailtId)
+        {
+            var cartDetail = await _unitOfWork.GetRepository<Cartdetail>().FindAsync(cartDetailtId);
+
+            if (cartDetail == null)
+            {
+                return NoContent();
+            }
+
+            var product = await _unitOfWork.GetRepository<Product>().GetFirstOrDefaultAsync(
+                    predicate: p => (p.Productinacitve == true && p.Productid == cartDetail.Productid));
+            var cart = await _unitOfWork.GetRepository<Cart>().FindAsync(cartDetail.Cartid);
+
+            if (product == null || cart == null)
+            {
+                return NoContent();
+            }
+
+            var quantity = cartDetail.Cartdetailquantity;
+            _unitOfWork.GetRepository<Cartdetail>().Delete(cartDetail);
+            cart.Cartquantity -= quantity;
+            _unitOfWork.GetRepository<Cart>().Update(cart);
+            await _unitOfWork.SaveChangesAsync();
+            return Json(new { success = true });
+        }
+
+    }
 }

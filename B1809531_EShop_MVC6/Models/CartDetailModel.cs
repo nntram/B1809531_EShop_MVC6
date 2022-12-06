@@ -6,6 +6,8 @@ namespace B1809531_EShop_MVC6.Models
     public class CartDetailModel
     {
         [StringLength(64)]
+        public string Cartdetailid { get; set; } = null!;
+        [StringLength(64)]
         public string Cartid { get; set; } = null!;
         [StringLength(64)]
         public string Productid { get; set; } = null!;

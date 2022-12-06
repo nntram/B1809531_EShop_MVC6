@@ -8,5 +8,10 @@ namespace B1809531_EShop_MVC6.Controllers
         {
             return ViewComponent("HeaderCart");
         }
+        public IActionResult CartItem()
+        {
+            return ViewComponent("CartItem");
+        }
+
     }
 }

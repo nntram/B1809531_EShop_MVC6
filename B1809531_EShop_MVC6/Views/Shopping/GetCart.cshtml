@@ -1,12 +1,116 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Xem giỏ hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 
 <!-- Shoping Cart Section Begin -->
-<section class="shoping-cart spad" id="cart-item-section">
+<div id="cart-item-section">
     @await Component.InvokeAsync("CartItem")
-</section>
+</div>
 <!-- Shoping Cart Section End -->
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            var success = 0;
+            $(function () {
+
+                $(document).on("click", ".inc.qtybtn", function () {
+                    var cartDetailtId = $(this).data("cartdetail")
+               
+                    $.ajax({
+                        url: '/Shopping/AddOne',
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            cartDetailtId: cartDetailtId
+                        },
+                        success: function (response) {
+                            success = 1;
+                            if (typeof response !== "undefined") {
+                                $('#header-card-quatity').load("/CartAjax/HeaderCart")
+                                $('#cart-item-section').load("/CartAjax/CartItem")
+                                $.notify("Đã thêm vào giỏ hàng.", "success");
+
+                            }
+                            else {
+                                $.notify("Kiểm tra lại số lượng sản phẩm.")
+                            }
+                        },
+                        error: function (error) {
+                            alert("There was an error posting the data to the server: " + error.responseText);
+                        }
+                    });
+
+
+                });
+
+                $(document).on("click", ".dec.qtybtn", function () {
+                    var cartDetailtId = $(this).data("cartdetail")
+
+                    $.ajax({
+                        url: '/Shopping/MinusOne',
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            cartDetailtId: cartDetailtId
+                        },
+                        success: function (response) {
+                            success = 1;
+                            if (typeof response !== "undefined") {
+                                $('#header-card-quatity').load("/CartAjax/HeaderCart")
+                                $('#cart-item-section').load("/CartAjax/CartItem")
+                                $.notify("Đã bỏ bớt khỏi giỏ hàng", "warning");
+
+                            }
+                            else {
+                                $.notify("Kiểm tra lại số lượng sản phẩm.")
+                            }
+                        },
+                        error: function (error) {
+                            alert("There was an error posting the data to the server: " + error.responseText);
+                        }
+                    });
+
+
+                });
+
+                $(document).on("click", ".icon_close", function () {
+                    var cartDetailtId = $(this).data("cartdetail")
+               
+                    $.ajax({
+                        url: '/Shopping/Remove',
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            cartDetailtId: cartDetailtId
+                        },
+                        success: function (response) {
+                            success = 1;
+                            if (typeof response !== "undefined") {
+                                $('#header-card-quatity').load("/CartAjax/HeaderCart")
+                                $('#cart-item-section').load("/CartAjax/CartItem")
+                                $.notify("Đã xóa khỏi giỏ hàng", "warning");
+                            }
+                            else {
+                                $.notify("Kiểm tra lại số lượng sản phẩm.")
+                            }
+                        },
+                        error: function (error) {
+                            alert("There was an error posting the data to the server: " + error.responseText);
+                        }
+                    });
+
+
+                });
+
+              
+
+
+            })
+
+        })
+
+    </script>
+
+}
