@@ -113,8 +113,8 @@
                 </div>
                 <div class="col-lg-3">
                     <div class="header__cart">
-                        <ul>
-                             @await Html.PartialAsync("~/Views/Shopping/_cartQuantity.cshtml")
+                        <ul id="header-card-quatity">
+                            @await Component.InvokeAsync("HeaderCart")
                         </ul>
                     </div>
                 </div>
@@ -218,6 +218,7 @@
     <script src="~/assets/js/owl.carousel.min.js"></script>
     <script src="~/assets/js/main.js"></script>
     <script src="~/lib/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/assets/js/notify.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

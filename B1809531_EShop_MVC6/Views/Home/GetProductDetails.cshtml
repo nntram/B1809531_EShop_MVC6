@@ -37,7 +37,7 @@
                         <span class="fa fa-heart-o text-danger font-weight-bold font-italic"> Hot item </span>
                     }
                     <h3>
-                        
+
                         @Model.Productname
                     </h3>
                     <div class="product__details__price"> @String.Format("{0:n0}", Model.Productsaleprice) VNĐ</div>
@@ -51,14 +51,21 @@
                     <div class="product__details__quantity">
                         <div class="quantity">
                             <div class="pro-qty">
-                                <input type="text" value="1" min="1" max="@Model.Productquantity" step="1">
+                                <input type="text" value="1" min="1" max="@Model.Productquantity" step="1" id="txtQuantity">
                             </div>
                         </div>
                     </div>
-                    <a href="#" class="primary-btn">Thêm vào giỏ hàng</a>
+                    <input type="text" id="txtProductId" value="@Model.Productid" hidden />
+                    <button id="add-to-cart" class="primary-btn" type="submit">Thêm vào giỏ hàng</button>
                     <a href="#" class="heart-icon"><span class="icon_heart_alt"></span></a>
                     <ul>
-                        <li><b>Số lượng: </b> <span>@Model.Productquantity</span></li>
+                        <li>
+                            <b>Có sẵn: </b>
+                            <span>
+                                <input value="@Model.Productquantity"
+                                       class="bg-white border-0" disabled id="maxQuantity" />
+                            </span>
+                        </li>
                         <li><b>Phí vận chuyển:</b> <span>30,000 VNĐ </span></li>
                         <li><i>Miễn phí vận chuyển cho mọi đơn hàng từ 250,000 VNĐ </i></li>
                         <li>
@@ -125,3 +132,66 @@
     </div>
 </section>
 <!-- Related Product Section End -->
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $(function () {
+
+                $("#add-to-cart").click(function () {
+                    var productid = $('#txtProductId').val();
+                    var soLuong = $('#txtQuantity').val();
+                    $.ajax({
+                        url: '/Shopping/AddToCart',
+                        type: "POST",
+                        dataType: "JSON",
+                        data: {
+                            productId: productid,
+                            quantity: soLuong
+                        },
+                        success: function (response) {
+                            if (typeof response !== "undefined") {
+                                $('#header-card-quatity').load("/CartAjax/HeaderCart")
+                                $.notify("Đã thêm vào giỏ hàng.", "success");
+                            }
+                            else {
+                                $.notify("Kiểm tra lại số lượng sản phẩm.")
+                            }
+                        },
+                        error: function (error) {
+                            alert("There was an error posting the data to the server: " + error.responseText);
+                        }
+                    });
+                });
+
+                $.fn.ValidQuantity = function () {
+                    let value = parseInt($("#txtQuantity").val());
+                    let maxValue = parseInt($("#maxQuantity").val());
+                    if (Number.isNaN(value)) {
+                        $("#txtQuantity").val(1);
+                    }
+                    else if (value < 1) {
+                        $("#txtQuantity").val(1);
+                    }
+                    else if (value > maxValue) {
+                        $("#txtQuantity").val(maxValue);
+                    }
+                    else {
+                        $("#txtQuantity").val(value);
+                    }
+                }
+
+                $("#txtQuantity").change(function () {
+                    $.fn.ValidQuantity()
+                });
+                $('.qtybtn').bind("mouseout", function () {
+                    $.fn.ValidQuantity()
+                });
+
+
+            })
+
+        })
+
+    </script>
+
+}

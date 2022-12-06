@@ -24,35 +24,28 @@ namespace B1809531_EShop_MVC6.Controllers
 			_mapper = mapper;
 		}
 
-		private async Task<Cart?> GetCustomerCart(string id)
+		private async Task<Cart?> GetCustomerCart(string cusomterId)
 		{
             var cart = await _unitOfWork.GetRepository<Cart>().GetFirstOrDefaultAsync(
-                        predicate: p => p.Customerid == id,
+                        predicate: p => p.Customerid == cusomterId,
                         include: p => p.Include(n => n.Cartdetails));
             return cart;
         }
 		public async Task<IActionResult> GetCart()
-		{
-            var userClaim = User.Identity as ClaimsIdentity;
-			string id = userClaim.FindFirst(ClaimTypes.NameIdentifier).Value;
-			var cart = await GetCustomerCart(id);
-            
-			if(cart == null)
-			{
-				return NotFound();
-			}
-           
-			return View(_mapper.Map<CartModel>(cart));
+		{         
+			return View();
 		}
 
-		public async Task<IActionResult> AddToCart(string prodcutId, int quantity)
+		[HttpPost]
+		public async Task<IActionResult> AddToCart(string productId, int quantity)
 		{
             var userClaim = User.Identity as ClaimsIdentity;
-            string id = userClaim.FindFirst(ClaimTypes.NameIdentifier).Value;
+            string cusomterId = userClaim.FindFirst(ClaimTypes.NameIdentifier).Value;
 
-            var cart = await GetCustomerCart(id);
-            var product = await _unitOfWork.GetRepository<Product>().FindAsync(prodcutId);
-			if(product == null || cart == null || quantity < 0 || 
+            var cart = await GetCustomerCart(cusomterId);
+            var product = await _unitOfWork.GetRepository<Product>().GetFirstOrDefaultAsync(
+							predicate: p => (p.Productid == productId && p.Productinacitve == true));
+			if(product == null || cart == null || quantity < 1 || 
 				(product != null && quantity > product.Productquantity) )
 			{
 				return NoContent();
@@ -61,25 +54,29 @@ namespace B1809531_EShop_MVC6.Controllers
 			var cartDetail = cart.Cartdetails;
 
 			//check product in cart
-			var isInCart = cartDetail.FirstOrDefault(n => n.Productid == id);
+			var isInCart = cartDetail.FirstOrDefault(n => n.Productid == productId);
 			if (isInCart != null)
 			{
+				if(quantity + isInCart.Cartdetailquantity > product.Productquantity)
+				{
+                    return NoContent();
+                }
 				isInCart.Cartdetailquantity += quantity;
 				_unitOfWork.GetRepository<Cartdetail>().Update(isInCart);				
 			}
 			else
 			{
 				Cartdetail item = new Cartdetail();
-				item.Productid = id;	
-				item.Cartdetailquantity = quantity;
-				item.Cartdetailprice = product.Productsaleprice;
+				item.Productid = productId;	
+				item.Cartdetailquantity = quantity;				
 				item.Cartid = cart.Cartid;
 				await _unitOfWork.GetRepository<Cartdetail>().InsertAsync(item);				
 			}
 			cart.Cartquantity += quantity;
 			_unitOfWork.GetRepository<Cart>().Update(cart);
 			await _unitOfWork.SaveChangesAsync();
-			return PartialView("_cartQuatity");
-		}
+
+            return Json(new { success = true });
+        }
 	}
 }

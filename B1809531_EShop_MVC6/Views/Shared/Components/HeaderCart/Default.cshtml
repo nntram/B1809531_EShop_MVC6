@@ -1,0 +1,19 @@
+﻿@model (bool, int)
+@{
+    if (Model.Item1)
+    {
+        <li>
+            <a asp-action="GetCart" asp-controller="Shopping">
+                <i class="fa fa-shopping-bag"></i><span>@Model.Item2</span>
+            </a>
+        </li>
+    }
+    else
+    {
+        <li>
+            <a asp-action="Login" asp-controller="User">
+                <i class="fa fa-shopping-bag"></i><span>@Model.Item2</span>
+            </a>
+        </li>
+    }
+}

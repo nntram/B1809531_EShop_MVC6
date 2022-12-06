@@ -11,6 +11,7 @@ namespace B1809531_EShop_MVC6.Models
         public string Productid { get; set; } = null!;
         public int? Cartdetailquantity { get; set; }
         public int? Cartdetailprice { get; set; }
+        public ProductModel Product { get; set; } = null!;
 
     }
 }
