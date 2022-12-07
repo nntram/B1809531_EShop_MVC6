@@ -40,6 +40,9 @@ namespace B1809531_EShop_MVC6.Entities
         public string? Orderadress { get; set; }
         [Column("ORDERSHIPCOST")]
         public int? Ordershipcost { get; set; }
+        [Column("ORDERPHONENUMBER")]
+        [StringLength(16)]
+        public string? Orderphonenumber { get; set; }
 
         [ForeignKey("Customerid")]
         [InverseProperty("Orders")]

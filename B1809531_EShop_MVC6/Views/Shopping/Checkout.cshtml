@@ -1,5 +1,10 @@
 ﻿@using B1809531_EShop_MVC6.Helpers;
 @model IEnumerable<CartDetailModel>
+@{
+    ViewData["Title"] = "Đặt hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
 
 <section class="shoping-cart spad">
     <div class="container">
@@ -17,12 +22,12 @@
                                         <th>Đơn giá</th>
                                         <th>Số lượng</th>
                                         <th>Thành tiền</th>
-                                        <th></th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @{
-                                        int i = 0;
+
                                         foreach (var item in Model)
                                         {
                                             <tr>
@@ -31,7 +36,7 @@
                                                 </td>
                                                 <td class="shoping__cart__item">
                                                     <h5 class="ml-2">@item.Product.Productname</h5>
-                                                    <input type="text" value="@item.Cartdetailid" hidden id="cartid-@i">
+                                                    <input type="text" value="@item.Cartdetailid" hidden>
                                                 </td>
                                                 <td class="shoping__cart__price">
                                                     @String.Format("{0:n0}", item.Product.Productsaleprice)
@@ -47,12 +52,12 @@
                                                     else
                                                     {
                                                         <td class="shoping__cart__quantity">
-                                                            <input type="text" value="@item.Product.Productquantity" hidden id="productquatity-@i">
+                                                            <input type="text" value="@item.Product.Productquantity" hidden>
                                                             <div class="quantity">
                                                                 <div class="pro-qty">
-                                                                    <span class="dec qtybtn" data-cartdetail="@item.Cartdetailid">-</span>
-                                                                    <input type="text" value="@item.Cartdetailquantity" id="cartdetailquantity-@i">
-                                                                    <span class="inc qtybtn" data-cartdetail="@item.Cartdetailid">+</span>
+
+                                                                    <input type="text" value="@item.Cartdetailquantity" disabled>
+
                                                                 </div>
                                                             </div>
                                                         </td>
@@ -61,47 +66,17 @@
                                                 <td class="shoping__cart__total">
                                                     @String.Format("{0:n0}",item.Product.Productsaleprice * item.Cartdetailquantity)
                                                 </td>
-                                                <td class="shoping__cart__item__close">
-                                                    <span class="icon_close" data-cartdetail="@item.Cartdetailid"></span>
-                                                </td>
+
                                             </tr>
 
-                                            i++;
                                         }
                                     }
                                 </tbody>
                             </table>
                         </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="shoping__cart__btns">
-                                    <a asp-action="GetProductList" asp-controller="Home" class="primary-btn cart-btn">Mua sắm tiếp</a>
 
-                                </div>
-                            </div>
-
-                            <div class="col-lg-6">
-                                <div class="shoping__checkout mt-0">
-                                    <h5>Tổng kết giỏ hàng</h5>
-                                    <ul>
-                                        <li>Tổng số lượng: <span>@Model.Sum(n => n.Cartdetailquantity)</span></li>
-                                        <li>Tổng số tiền: <span>@String.Format("{0:n0}", Model.Sum(n => n.Cartdetailquantity*n.Product.Productsaleprice)) VNĐ</span></li>
-                                    </ul>
-                                    <a class="primary-btn" asp-action="Checkout" asp-controller="Shopping">Thanh toán</a>
-                                </div>
-                            </div>
-
-                        </div>
                     }
-                    else
-                    {
-                        <div class="text-center">
-                            <img src="/@(GetPath.BannerImage+"/empty-cart.png")" />
-                        </div>
-                        <div class="text-center shoping__cart__btns">
-                            <a asp-action="GetProductList" asp-controller="Home" class="primary-btn cart-btn">Mua sắm tiếp</a>
-                        </div>
-                    }
+
                 }
 
             </div>
@@ -109,3 +84,62 @@
 
     </div>
 </section>
+
+<!-- Checkout Section Begin -->
+<section class="checkout spad">
+    <div class="container">
+        <div class="checkout__form">
+            <h4>Thông tin đặt hàng</h4>
+            <form asp-action="Checkout" method="post">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Họ tên<span>*</span></p>
+                                    <input type="text" value="@ViewBag.Infor.Item1" name="customerName">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="checkout__input">
+                                    <p>Số điện thoại<span>*</span></p>
+                                    <input type="text" value="@ViewBag.Infor.Item2" name="customerPhone">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="checkout__input">
+                            <p>Địa chỉ<span>*</span></p>
+                            <input type="text" placeholder="Số nhà, tên đường" value="@ViewBag.Infor.Item3"
+                                   class="checkout__input__add"name="customerAddress">
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6">
+
+                        <div class="shoping__checkout mt-0">
+                            <h5>Tổng kết giỏ hàng</h5>
+                            <ul>
+                                <li>Tổng số lượng: <span>@Model.Sum(n => n.Cartdetailquantity)</span></li>
+                                <li>Tổng số tiền: <span>@String.Format("{0:n0}", Model.Sum(n => n.Cartdetailquantity*n.Product.Productsaleprice)) VNĐ</span></li>
+                            </ul>
+                            <button type="submit" class="btn btn-success w-100" >Đặt hàng</button>
+                        </div>
+                        <div class="text-center shoping__cart__btns mt-4">
+                            <a asp-action="GetProductList" asp-controller="Home" class="primary-btn cart-btn">Mua sắm tiếp</a>
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+
+    </div>
+</section>
+<!-- Checkout Section End -->

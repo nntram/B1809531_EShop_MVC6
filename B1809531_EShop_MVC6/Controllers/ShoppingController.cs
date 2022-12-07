@@ -26,6 +26,12 @@ namespace B1809531_EShop_MVC6.Controllers
 
 		private async Task<Cart?> GetCustomerCart(string cusomterId)
 		{
+            var customer = await _unitOfWork.GetRepository<Customer>().GetFirstOrDefaultAsync(
+                        predicate: p => p.Customerid == cusomterId && p.Customerinactive== true);
+            if(customer == null)
+            {
+                return null;
+            }
             var cart = await _unitOfWork.GetRepository<Cart>().GetFirstOrDefaultAsync(
                         predicate: p => p.Customerid == cusomterId,
                         include: p => p.Include(n => n.Cartdetails));
@@ -160,6 +166,87 @@ namespace B1809531_EShop_MVC6.Controllers
             _unitOfWork.GetRepository<Cart>().Update(cart);
             await _unitOfWork.SaveChangesAsync();
             return Json(new { success = true });
+        }
+        [HttpGet]
+        public async Task<IActionResult> Checkout()
+        {
+            var userClaim = User.Identity as ClaimsIdentity;
+            string cusomterId = userClaim.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var customer = await _unitOfWork.GetRepository<Customer>().GetFirstOrDefaultAsync(
+                       predicate: p => p.Customerid == cusomterId && p.Customerinactive == true);
+            if (customer == null)
+            {
+                return NotFound();
+            }
+            var cart = await _unitOfWork.GetRepository<Cart>().GetFirstOrDefaultAsync(
+                        predicate: p => p.Customerid == cusomterId,
+                        include: p => p.Include(n => n.Cartdetails)
+                                        .ThenInclude(m => m.Product)
+                                        .ThenInclude(q => q.Productimages));
+
+            if (cart == null)
+            {
+                return NotFound();
+            }
+            if(cart.Cartquantity < 1)
+            {
+                return RedirectToAction("GetCart");
+            }
+
+            var cartDetail = cart.Cartdetails;
+            ViewBag.Infor = (customer.Customername, customer.Customerphonenumber, customer.Customeraddress);
+            return View(_mapper.Map<IEnumerable<CartDetailModel>>(cartDetail));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Checkout(IEnumerable<CartDetailModel> model)
+        {
+            var name = Request.Form["customerName"].ToString();
+            var phone = Request.Form["customerPhone"].ToString();
+            var address = Request.Form["customerAddress"].ToString();
+
+            var userClaim = User.Identity as ClaimsIdentity;
+            string cusomterId = userClaim.FindFirst(ClaimTypes.NameIdentifier).Value;
+            var cart = await GetCustomerCart(cusomterId);
+            if (cart == null)
+            {
+                return NotFound();
+            }
+
+            var order = new Order();
+            order.Customerid = cusomterId;
+            order.Orderadress = address;
+            order.Orderphonenumber = phone;
+            order.Orderid = Guid.NewGuid().ToString();  
+            await _unitOfWork.GetRepository<Order>().InsertAsync(order);
+            _unitOfWork.SaveChanges();
+            var cartDetailList = cart.Cartdetails.ToList();
+            foreach (var item in cartDetailList)
+            {
+                var product = await _unitOfWork.GetRepository<Product>().GetFirstOrDefaultAsync(
+                    predicate: p => (p.Productinacitve == true && p.Productid == item.Productid));
+                if(product == null)
+                {
+                    continue;
+                }
+                Orderdetail orderdetail= new Orderdetail();
+                orderdetail.Orderid = order.Orderid;
+                orderdetail.Productid = item.Productid;
+                orderdetail.Orderdetailquantity = item.Cartdetailquantity;
+                orderdetail.Orderdetailprice = product.Productprice;
+                await _unitOfWork.GetRepository<Orderdetail>().InsertAsync(orderdetail);
+                _unitOfWork.SaveChanges();
+
+                var cartDetail = await _unitOfWork.GetRepository<Cartdetail>().FindAsync(item.Cartdetailid);
+                _unitOfWork.GetRepository<Cartdetail>().Delete(cartDetail);
+                cart.Cartquantity -= item.Cartdetailquantity;
+                _unitOfWork.GetRepository<Cart>().Update(cart);
+                await _unitOfWork.SaveChangesAsync();
+            }
+
+            _notifyService.Success("Đặt hàng thành công, cảm ơn bạn!");
+            return RedirectToAction("Index", "Home");
         }
 
     }
