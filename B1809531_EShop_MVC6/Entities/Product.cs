@@ -47,7 +47,7 @@ namespace B1809531_EShop_MVC6.Entities
         public bool? Productinacitve { get; set; }
         [Column("PRODUCTCODE")]
         public int Productcode { get; set; }
-        [Column("productishot")]
+        [Column("PRODUCTISHOT")]
         public bool? Productishot { get; set; }
 
         [ForeignKey("Brandid")]

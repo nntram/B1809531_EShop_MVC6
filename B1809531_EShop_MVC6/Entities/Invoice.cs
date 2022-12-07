@@ -39,8 +39,7 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(256)]
         public string? Invoiceadress { get; set; }
         [Column("INVOICESHIPCOST")]
-        [StringLength(256)]
-        public string? Invoiceshipcost { get; set; }
+        public int? Invoiceshipcost { get; set; }
 
         [ForeignKey("Customerid")]
         [InverseProperty("Invoices")]

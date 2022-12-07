@@ -26,7 +26,8 @@ namespace B1809531_EShop_MVC6.Entities
         [StringLength(64)]
         public string? Staffid { get; set; }
         [Column("ORDERSTATUSID")]
-        public int Orderstatusid { get; set; }
+        [StringLength(64)]
+        public string Orderstatusid { get; set; } = null!;
         [Column("CUSTOMERID")]
         [StringLength(64)]
         public string Customerid { get; set; } = null!;
@@ -47,6 +48,9 @@ namespace B1809531_EShop_MVC6.Entities
         [ForeignKey("Customerid")]
         [InverseProperty("Orders")]
         public virtual Customer Customer { get; set; } = null!;
+        [ForeignKey("Orderstatusid")]
+        [InverseProperty("Orders")]
+        public virtual Orderstatus Orderstatus { get; set; } = null!;
         [ForeignKey("Staffid")]
         [InverseProperty("Orders")]
         public virtual staff? Staff { get; set; }

@@ -16,7 +16,8 @@ namespace B1809531_EShop_MVC6.Entities
 
         [Key]
         [Column("ORDERSTATUSID")]
-        public int Orderstatusid { get; set; }
+        [StringLength(64)]
+        public string Orderstatusid { get; set; } = null!;
         [Column("ORDERSTATUSNAME")]
         [StringLength(256)]
         public string? Orderstatusname { get; set; }

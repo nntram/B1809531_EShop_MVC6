@@ -27,6 +27,7 @@ namespace B1809531_EShop_MVC6.Data
         public virtual DbSet<Invoicedetail> Invoicedetails { get; set; } = null!;
         public virtual DbSet<Order> Orders { get; set; } = null!;
         public virtual DbSet<Orderdetail> Orderdetails { get; set; } = null!;
+        public virtual DbSet<Orderstatus> Orderstatuses { get; set; } = null!;
         public virtual DbSet<Product> Products { get; set; } = null!;
         public virtual DbSet<Productimage> Productimages { get; set; } = null!;
         public virtual DbSet<Province> Provinces { get; set; } = null!;
@@ -188,11 +189,19 @@ namespace B1809531_EShop_MVC6.Data
 
                 entity.Property(e => e.Ordercreateddate).HasDefaultValueSql("(datediff_big(millisecond,'1970-01-01 00:00:00',getdate()))");
 
+                entity.Property(e => e.Orderstatusid).HasDefaultValueSql("((0))");
+
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.Customerid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ORDER_CUSTOMER__CUSTOMER");
+
+                entity.HasOne(d => d.Orderstatus)
+                    .WithMany(p => p.Orders)
+                    .HasForeignKey(d => d.Orderstatusid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_ORDER_ORDER_STA_ORDERSTA");
 
                 entity.HasOne(d => d.Staff)
                     .WithMany(p => p.Orders)
@@ -215,6 +224,14 @@ namespace B1809531_EShop_MVC6.Data
                     .HasForeignKey(d => d.Productid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ORDERDET_ORDERDETA_PRODUCT");
+            });
+
+            modelBuilder.Entity<Orderstatus>(entity =>
+            {
+                entity.HasKey(e => e.Orderstatusid)
+                    .IsClustered(false);
+
+                entity.Property(e => e.Orderstatusid).HasDefaultValueSql("(newid())");
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -301,7 +318,7 @@ namespace B1809531_EShop_MVC6.Data
                     .WithMany(p => p.Wards)
                     .HasForeignKey(d => d.Districtid)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_WARD_WARD_PROV_DISTRICT");
+                    .HasConstraintName("FK_WARD_WARD_PROV_PROVINCE");
             });
 
             modelBuilder.Entity<Warehousereceipt>(entity =>
