@@ -68,15 +68,17 @@ namespace B1809531_EShop_MVC6.Controllers
                     return NoContent();
                 }
 				isInCart.Cartdetailquantity += quantity;
-				_unitOfWork.GetRepository<Cartdetail>().Update(isInCart);				
-			}
+				_unitOfWork.GetRepository<Cartdetail>().Update(isInCart);
+                await _unitOfWork.SaveChangesAsync();
+            }
 			else
 			{
 				Cartdetail item = new Cartdetail();
 				item.Productid = productId;	
 				item.Cartdetailquantity = quantity;				
 				item.Cartid = cart.Cartid;
-				await _unitOfWork.GetRepository<Cartdetail>().InsertAsync(item);				
+				await _unitOfWork.GetRepository<Cartdetail>().InsertAsync(item);
+                _unitOfWork.SaveChanges();
 			}
 			cart.Cartquantity += quantity;
 			_unitOfWork.GetRepository<Cart>().Update(cart);
@@ -110,7 +112,9 @@ namespace B1809531_EShop_MVC6.Controllers
 
 			cartDetail.Cartdetailquantity++;
 			_unitOfWork.GetRepository<Cartdetail>().Update(cartDetail);
-			cart.Cartquantity++;
+            await _unitOfWork.SaveChangesAsync();
+
+            cart.Cartquantity++;
 			_unitOfWork.GetRepository<Cart>().Update(cart);
 			await _unitOfWork.SaveChangesAsync();
             return Json(new { success = true });
@@ -136,6 +140,8 @@ namespace B1809531_EShop_MVC6.Controllers
       
             cartDetail.Cartdetailquantity--;
             _unitOfWork.GetRepository<Cartdetail>().Update(cartDetail);
+            await _unitOfWork.SaveChangesAsync();
+
             cart.Cartquantity--;
             _unitOfWork.GetRepository<Cart>().Update(cart);
             await _unitOfWork.SaveChangesAsync();
@@ -162,6 +168,8 @@ namespace B1809531_EShop_MVC6.Controllers
 
             var quantity = cartDetail.Cartdetailquantity;
             _unitOfWork.GetRepository<Cartdetail>().Delete(cartDetail);
+            await _unitOfWork.SaveChangesAsync();
+
             cart.Cartquantity -= quantity;
             _unitOfWork.GetRepository<Cart>().Update(cart);
             await _unitOfWork.SaveChangesAsync();
@@ -221,8 +229,8 @@ namespace B1809531_EShop_MVC6.Controllers
             order.Orderid = Guid.NewGuid().ToString();  
             await _unitOfWork.GetRepository<Order>().InsertAsync(order);
             _unitOfWork.SaveChanges();
-            var cartDetailList = cart.Cartdetails.ToList();
-            foreach (var item in cartDetailList)
+            
+            foreach (var item in cart.Cartdetails)
             {
                 var product = await _unitOfWork.GetRepository<Product>().GetFirstOrDefaultAsync(
                     predicate: p => (p.Productinacitve == true && p.Productid == item.Productid));
@@ -240,10 +248,12 @@ namespace B1809531_EShop_MVC6.Controllers
 
                 var cartDetail = await _unitOfWork.GetRepository<Cartdetail>().FindAsync(item.Cartdetailid);
                 _unitOfWork.GetRepository<Cartdetail>().Delete(cartDetail);
-                cart.Cartquantity -= item.Cartdetailquantity;
-                _unitOfWork.GetRepository<Cart>().Update(cart);
-                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.SaveChangesAsync();               
             }
+            var updateCart = await GetCustomerCart(cusomterId);
+            updateCart.Cartquantity = 0;
+            _unitOfWork.GetRepository<Cart>().Update(updateCart);
+            _unitOfWork.SaveChanges();
 
             _notifyService.Success("Đặt hàng thành công, cảm ơn bạn!");
             return RedirectToAction("Index", "Home");
